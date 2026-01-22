@@ -43,8 +43,26 @@ export enum UserRole {
 
 export type Language = 'en' | 'fr';
 
+export interface Company {
+  id: string;
+  name: string;
+  subdomain: string; // For URL-based tenant identification
+  logo?: string;
+  primaryColor: string;
+  secondaryColor: string;
+  address: string;
+  phone: string;
+  email: string;
+  website?: string;
+  timezone: string;
+  currency: string;
+  createdAt: string;
+  status: 'active' | 'inactive' | 'suspended';
+}
+
 export interface MenuItem {
   id: string;
+  companyId: string;
   name: string;
   description: string;
   price: number;
@@ -64,6 +82,7 @@ export interface AccessKey {
 
 export interface StaffMember {
   id: string;
+  companyId: string;
   name: string;
   email: string;
   password?: string;
@@ -97,6 +116,7 @@ export interface Conversation {
 
 export interface Task {
   id: string;
+  companyId: string;
   title: string;
   description: string;
   type: TaskType;
@@ -159,6 +179,7 @@ export interface RoomCategory {
 
 export interface Room {
   id: string;
+  companyId: string;
   number: string;
   categoryId: string;
   status: RoomStatus;
@@ -168,6 +189,7 @@ export interface Room {
 
 export interface Guest {
   id: string;
+  companyId: string;
   name: string;
   email: string;
   phone: string;
