@@ -1,0 +1,209 @@
+import {
+  Room,
+  Booking,
+  Guest,
+  RoomCategory,
+  Task,
+  TaskTemplate,
+  StaffMember,
+  Feedback,
+  StaffEmail,
+  InAppNotification,
+  Conversation,
+  MenuItem,
+  Company
+} from '../types';
+import {
+  INITIAL_COMPANIES,
+  INITIAL_ROOMS,
+  INITIAL_BOOKINGS,
+  INITIAL_GUESTS,
+  INITIAL_CATEGORIES,
+  INITIAL_TASKS,
+  INITIAL_TEMPLATES,
+  INITIAL_STAFF,
+  INITIAL_FEEDBACK,
+  INITIAL_CONVERSATIONS,
+  INITIAL_MENU
+} from '../constants';
+import { authService, sanitizeInput } from './authService';
+import {
+  sanitizeId,
+  sanitizeObject,
+  isNoSQLInjection,
+  sanitizeString
+} from './security';
+
+interface DatabaseSchema {
+  companies: Company[];
+  rooms: Room[];
+  bookings: Booking[];
+  guests: Guest[];
+  categories: RoomCategory[];
+  tasks: Task[];
+  templates: TaskTemplate[];
+  staff: StaffMember[];
+  feedback: Feedback[];
+  emails: StaffEmail[];
+  notifications: InAppNotification[];
+  conversations: Conversation[];
+  menu: MenuItem[];
+}
+
+// Mock database service
+class DatabaseService {
+  private data: DatabaseSchema = {
+    companies: INITIAL_COMPANIES,
+    rooms: INITIAL_ROOMS,
+    bookings: INITIAL_BOOKINGS,
+    guests: INITIAL_GUESTS,
+    categories: INITIAL_CATEGORIES,
+    tasks: INITIAL_TASKS,
+    templates: INITIAL_TEMPLATES,
+    staff: INITIAL_STAFF,
+    feedback: INITIAL_FEEDBACK,
+    emails: [],
+    notifications: [],
+    conversations: INITIAL_CONVERSATIONS,
+    menu: INITIAL_MENU
+  };
+
+  async getAll<T extends keyof DatabaseSchema>(table: T, companyId?: string): Promise<DatabaseSchema[T]> {
+    // In a real app, this would fetch from a database
+    // Allow read operations without authentication for initial data loading
+    const items = this.data[table] as any[];
+
+    // Filter by companyId for tenant-specific tables
+    if (companyId && this.isCompanyScoped(table)) {
+      return items.filter((item: any) => item.companyId === companyId) as DatabaseSchema[T];
+    }
+
+    return this.data[table] as DatabaseSchema[T];
+  }
+
+  private isCompanyScoped(table: keyof DatabaseSchema): boolean {
+    const companyScopedTables: (keyof DatabaseSchema)[] = [
+      'rooms', 'bookings', 'guests', 'tasks', 'staff', 'feedback', 'emails', 'notifications', 'conversations', 'menu'
+    ];
+    return companyScopedTables.includes(table);
+  }
+
+  async getById<T extends keyof DatabaseSchema>(table: T, id: string, companyId?: string): Promise<DatabaseSchema[T][0] | undefined> {
+    // Validate and sanitize ID to prevent injection
+    let sanitizedId: string;
+    try {
+      sanitizedId = sanitizeId(id);
+    } catch (error) {
+      console.error('Invalid ID provided:', error);
+      return undefined;
+    }
+
+    // Check for NoSQL injection attempts
+    if (isNoSQLInjection(id)) {
+      console.error('Potential NoSQL injection attempt detected in getById');
+      return undefined;
+    }
+
+    const items = this.data[table] as any[];
+
+    // For company-scoped tables, filter by companyId first
+    let filteredItems = items;
+    if (companyId && this.isCompanyScoped(table)) {
+      filteredItems = items.filter((item: any) => item.companyId === companyId);
+    }
+
+    return filteredItems.find((item: any) => item.id === sanitizedId);
+  }
+
+  async create<T extends keyof DatabaseSchema>(table: T, item: DatabaseSchema[T][0], companyId?: string): Promise<DatabaseSchema[T][0]> {
+    // Sanitize the entire item object to prevent injection
+    let sanitizedItem: any;
+    try {
+      sanitizedItem = sanitizeObject(item);
+    } catch (error) {
+      throw new Error('Invalid data: potential injection attempt detected');
+    }
+
+    const items = this.data[table] as any[];
+
+    // For company-scoped tables, ensure companyId is set
+    if (companyId && this.isCompanyScoped(table)) {
+      sanitizedItem.companyId = sanitizeString(companyId, { maxLength: 100 });
+    }
+
+    items.push(sanitizedItem);
+    return sanitizedItem;
+  }
+
+  async update<T extends keyof DatabaseSchema>(table: T, id: string, updates: Partial<DatabaseSchema[T][0]>): Promise<DatabaseSchema[T][0] | undefined> {
+    // Validate user authentication
+    if (!authService.isAuthenticated()) {
+      throw new Error('Authentication required');
+    }
+
+    // Validate and sanitize ID
+    let sanitizedId: string;
+    try {
+      sanitizedId = sanitizeId(id);
+    } catch (error) {
+      throw new Error('Invalid ID format');
+    }
+
+    const sanitizedUpdates = this.sanitizeItem(updates);
+    const items = this.data[table] as any[];
+    const index = items.findIndex(item => item.id === sanitizedId);
+    if (index !== -1) {
+      items[index] = { ...items[index], ...sanitizedUpdates };
+      return items[index];
+    }
+    return undefined;
+  }
+
+  async updateCollection<T extends keyof DatabaseSchema>(table: T, items: DatabaseSchema[T]): Promise<void> {
+    // Validate user authentication
+    if (!authService.isAuthenticated()) {
+      throw new Error('Authentication required');
+    }
+
+    const sanitizedItems = items.map(item => this.sanitizeItem(item));
+    this.data[table] = sanitizedItems as DatabaseSchema[T];
+  }
+
+  async delete<T extends keyof DatabaseSchema>(table: T, id: string): Promise<boolean> {
+    // Validate user authentication
+    if (!authService.isAuthenticated()) {
+      throw new Error('Authentication required');
+    }
+
+    // Validate and sanitize ID
+    let sanitizedId: string;
+    try {
+      sanitizedId = sanitizeId(id);
+    } catch (error) {
+      throw new Error('Invalid ID format');
+    }
+
+    const items = this.data[table] as any[];
+    const index = items.findIndex(item => item.id === sanitizedId);
+    if (index !== -1) {
+      items.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
+  private sanitizeItem(item: any): any {
+    const sanitized = { ...item };
+
+    // Sanitize string fields
+    Object.keys(sanitized).forEach(key => {
+      if (typeof sanitized[key] === 'string') {
+        sanitized[key] = sanitizeInput(sanitized[key]);
+      }
+    });
+
+    return sanitized;
+  }
+}
+
+export const dbService = new DatabaseService();
