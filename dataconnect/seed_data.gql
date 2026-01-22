@@ -1,0 +1,30 @@
+mutation CreateDemoData @transaction @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  roomType_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      name: "Standard",
+      basePrice: 100.0,
+      maxOccupancy: 2
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      name: "Deluxe",
+      basePrice: 200.0,
+      maxOccupancy: 4
+    }
+  ])
+  room_insertMany(data: [
+    {
+      id: "650e8400-e29b-41d4-a716-446655440002",
+      roomTypeId: "550e8400-e29b-41d4-a716-446655440000",
+      roomNumber: "101",
+      status: "Vacant"
+    },
+    {
+      id: "650e8400-e29b-41d4-a716-446655440003",
+      roomTypeId: "550e8400-e29b-41d4-a716-446655440001",
+      roomNumber: "201",
+      status: "Occupied"
+    }
+  ])
+}

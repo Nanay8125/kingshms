@@ -21,7 +21,7 @@ import {
 } from './types';
 import { TRANSLATIONS } from './constants';
 
-// Lazy-loaded components for code-splitting
+// Lazy-loaded components for code-splitting with preloading
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
 const RoomGrid = React.lazy(() => import('./components/RoomGrid'));
 const BookingForm = React.lazy(() => import('./components/BookingForm'));
@@ -37,6 +37,21 @@ const MessagingHub = React.lazy(() => import('./components/MessagingHub'));
 const StaffInbox = React.lazy(() => import('./components/StaffInbox'));
 const MenuManagement = React.lazy(() => import('./components/MenuManagement'));
 const PublicBookingPortal = React.lazy(() => import('./components/PublicBookingPortal'));
+
+// Preload critical components
+const preloadCriticalComponents = () => {
+  // Preload Dashboard and RoomGrid as they are most commonly used
+  import('./components/Dashboard');
+  import('./components/RoomGrid');
+};
+
+// Preload on app start
+if (typeof window !== 'undefined') {
+  // Use requestIdleCallback if available, otherwise setTimeout
+  const schedulePreload = window.requestIdleCallback ||
+    ((cb: () => void) => setTimeout(cb, 1));
+  schedulePreload(preloadCriticalComponents);
+}
 
 const App: React.FC = () => {
   // Check for public booking access
@@ -75,28 +90,26 @@ const App: React.FC = () => {
   useEffect(() => {
     const initEssential = async () => {
       setIsLoading(true);
-      const [
-        r, b, c, t, s
-      ] = await Promise.all([
+
+      // Load only critical data first (rooms, categories, staff for login)
+      const [r, c, s] = await Promise.all([
         dbService.getAll('rooms'),
-        dbService.getAll('bookings'),
         dbService.getAll('categories'),
-        dbService.getAll('tasks'),
         dbService.getAll('staff')
       ]);
 
-      setRooms(r);
-      setBookings(b);
-      setCategories(c);
-      setTasks(t);
-      setStaff(s);
+      setRooms(r as Room[]);
+      setCategories(c as RoomCategory[]);
+      setStaff(s as StaffMember[]);
       setIsLoading(false);
 
-      // Load non-essential data in background
-      const loadNonEssential = async () => {
+      // Load remaining data in background with lower priority
+      setTimeout(async () => {
         const [
-          g, tpl, f, e, n, conv, m
+          b, t, g, tpl, f, e, n, conv, m
         ] = await Promise.all([
+          dbService.getAll('bookings'),
+          dbService.getAll('tasks'),
           dbService.getAll('guests'),
           dbService.getAll('templates'),
           dbService.getAll('feedback'),
@@ -106,15 +119,16 @@ const App: React.FC = () => {
           dbService.getAll('menu')
         ]);
 
-        setGuests(g);
-        setTemplates(tpl);
-        setFeedback(f);
-        setStaffEmails(e);
-        setNotifications(n);
-        setConversations(conv);
-        setMenu(m);
-      };
-      loadNonEssential();
+        setBookings(b as Booking[]);
+        setTasks(t as Task[]);
+        setGuests(g as Guest[]);
+        setTemplates(tpl as TaskTemplate[]);
+        setFeedback(f as Feedback[]);
+        setStaffEmails(e as StaffEmail[]);
+        setNotifications(n as InAppNotification[]);
+        setConversations(conv as Conversation[]);
+        setMenu(m as MenuItem[]);
+      }, 100); // Small delay to prioritize initial render
     };
     initEssential();
   }, []);
