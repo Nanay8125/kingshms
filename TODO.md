@@ -1,17 +1,20 @@
-# Security Implementation & Menu Management
+# Fix Module Resolution Error: Layout Component Missing on gh-pages
 
-## Security Tasks (Completed)
-- [x] Implement password hashing and secure authentication
-- [x] Add input validation and sanitization
-- [x] Implement role-based access control
-- [x] Add session management with timeout
-- [x] Secure database operations with authentication checks
-- [x] Encrypt sensitive data fields
+## Problem
+- Netlify build failing with "Could not resolve './components/Layout' from 'App.tsx'"
+- App.tsx exists on gh-pages branch but components/Layout.tsx is missing
+- Build process expects source files but gh-pages contains mixed source/built files
 
-## Menu Management Tasks
-- [ ] Add menu management to staff interface
-- [ ] Create menu item form component
-- [ ] Update menu state to be dynamic
-- [ ] Add add/edit/delete functionality
-- [ ] Update PublicBookingPortal to use dynamic menu
-- [ ] Test menu management functionality
+## Tasks
+- [x] Add components/Layout.tsx to gh-pages branch
+- [x] Add components/LoginForm.tsx to gh-pages branch
+- [x] Add services/authService.ts and services/dbService.ts to gh-pages branch
+- [x] Add types.ts to gh-pages branch
+- [x] Commit and push changes to gh-pages branch
+- [ ] Test build process on Netlify (trigger redeploy)
+- [ ] Consider deployment workflow improvements
+
+## Status
+- ✅ Fixed: Added all missing source files to gh-pages branch
+- ✅ Pushed changes to remote gh-pages branch
+- Ready for Netlify redeploy
