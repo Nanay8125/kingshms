@@ -85,13 +85,13 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
 ];
 
 export const INITIAL_MENU: MenuItem[] = [
-  { id: 'm1', name: 'Classic Eggs Benedict', description: 'Two poached eggs, Canadian bacon, hollandaise sauce on toasted English muffins.', price: 18, category: 'Breakfast', image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm2', name: 'Wagyu Beef Burger', description: '8oz Wagyu patty, aged cheddar, caramelized onions, truffle aioli on brioche.', price: 28, category: 'Main Course', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm3', name: 'Wild Mushroom Risotto', description: 'Arborio rice, seasonal forest mushrooms, parmesan reggiano, truffle oil.', price: 24, category: 'Main Course', image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm4', name: 'Dark Chocolate Lava Cake', description: 'Warm center, vanilla bean gelato, raspberry coulis.', price: 14, category: 'Desserts', image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm5', name: 'Signature Old Fashioned', description: 'Premium bourbon, bitters, orange zest, hand-cut ice.', price: 16, category: 'Drinks', image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm6', name: 'Fresh Seasonal Fruit Platter', description: 'Slices of melon, berries, grapes, and exotic tropical fruits.', price: 15, category: 'Breakfast', image: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm7', name: 'Artisanal Cheese Board', description: 'Selection of 3 local cheeses, honey, nuts, and crackers.', price: 22, category: 'Snacks', image: 'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm1', companyId: 'luxestay', name: 'Classic Eggs Benedict', description: 'Two poached eggs, Canadian bacon, hollandaise sauce on toasted English muffins.', price: 18, category: 'Breakfast', image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm2', companyId: 'luxestay', name: 'Wagyu Beef Burger', description: '8oz Wagyu patty, aged cheddar, caramelized onions, truffle aioli on brioche.', price: 28, category: 'Main Course', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm3', companyId: 'luxestay', name: 'Wild Mushroom Risotto', description: 'Arborio rice, seasonal forest mushrooms, parmesan reggiano, truffle oil.', price: 24, category: 'Main Course', image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm4', companyId: 'luxestay', name: 'Dark Chocolate Lava Cake', description: 'Warm center, vanilla bean gelato, raspberry coulis.', price: 14, category: 'Desserts', image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm5', companyId: 'luxestay', name: 'Signature Old Fashioned', description: 'Premium bourbon, bitters, orange zest, hand-cut ice.', price: 16, category: 'Drinks', image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm6', companyId: 'luxestay', name: 'Fresh Seasonal Fruit Platter', description: 'Slices of melon, berries, grapes, and exotic tropical fruits.', price: 15, category: 'Breakfast', image: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm7', companyId: 'luxestay', name: 'Artisanal Cheese Board', description: 'Selection of 3 local cheeses, honey, nuts, and crackers.', price: 22, category: 'Snacks', image: 'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?auto=format&fit=crop&q=80&w=400', available: true },
 ];
 
 // Hashed passwords for demo accounts (password: "SecurePass123!")
@@ -100,6 +100,7 @@ const DEMO_PASSWORD_HASH = 'efe5e46562838eb6afd1cb753f27a7616bf474188899dc69e0e7
 export const INITIAL_STAFF: StaffMember[] = [
   {
     id: 's1',
+    companyId: 'luxestay',
     name: 'Maria Garcia',
     email: 'maria@luxestay.com',
     password: DEMO_PASSWORD_HASH,
@@ -116,6 +117,7 @@ export const INITIAL_STAFF: StaffMember[] = [
   },
   {
     id: 's2',
+    companyId: 'luxestay',
     name: 'Dave Miller',
     email: 'dave@luxestay.com',
     password: DEMO_PASSWORD_HASH,
@@ -131,6 +133,7 @@ export const INITIAL_STAFF: StaffMember[] = [
   },
   {
     id: 's3',
+    companyId: 'luxestay',
     name: 'Sarah Chen',
     email: 'sarah@luxestay.com',
     password: DEMO_PASSWORD_HASH,
@@ -147,6 +150,7 @@ export const INITIAL_STAFF: StaffMember[] = [
   },
   {
     id: 's4',
+    companyId: 'luxestay',
     name: 'James Wilson',
     email: 'james@luxestay.com',
     password: DEMO_PASSWORD_HASH,
@@ -162,6 +166,7 @@ export const INITIAL_STAFF: StaffMember[] = [
   },
   {
     id: 's5',
+    companyId: 'luxestay',
     name: 'Elena Rodriguez',
     email: 'manager@luxestay.com',
     password: DEMO_PASSWORD_HASH,
@@ -180,29 +185,29 @@ export const INITIAL_STAFF: StaffMember[] = [
 ];
 
 export const INITIAL_CATEGORIES: RoomCategory[] = [
-  { id: 'cat1', name: 'Standard Room', basePrice: 100, capacity: 2, amenities: ['Free Wi-Fi', 'TV', 'Work Desk', 'Mini Fridge', 'Air Conditioning'] },
-  { id: 'cat2', name: 'Superior Room', basePrice: 150, capacity: 2, amenities: ['Free Wi-Fi', 'Mini Bar', 'Smart TV', 'Balcony', 'Room Service', 'Air Conditioning'] },
-  { id: 'cat3', name: 'Deluxe Room', basePrice: 200, capacity: 2, amenities: ['Free Wi-Fi', 'Mini Bar', 'Ocean View', 'Smart TV', 'Balcony', 'Nespresso Machine', 'Bath Tub', 'Room Service'] },
+  { id: 'cat1', companyId: 'luxestay', name: 'Standard Room', basePrice: 100, capacity: 2, amenities: ['Free Wi-Fi', 'TV', 'Work Desk', 'Mini Fridge', 'Air Conditioning'] },
+  { id: 'cat2', companyId: 'luxestay', name: 'Superior Room', basePrice: 150, capacity: 2, amenities: ['Free Wi-Fi', 'Mini Bar', 'Smart TV', 'Balcony', 'Room Service', 'Air Conditioning'] },
+  { id: 'cat3', companyId: 'luxestay', name: 'Deluxe Room', basePrice: 200, capacity: 2, amenities: ['Free Wi-Fi', 'Mini Bar', 'Ocean View', 'Smart TV', 'Balcony', 'Nespresso Machine', 'Bath Tub', 'Room Service'] },
 ];
 
 export const INITIAL_ROOMS: Room[] = [
-  { id: '1', number: '101', categoryId: 'cat1', status: RoomStatus.AVAILABLE, floor: 1, maintenanceHistory: [] },
-  { id: '2', number: '102', categoryId: 'cat1', status: RoomStatus.OCCUPIED, floor: 1, maintenanceHistory: [] },
-  { id: '3', number: '103', categoryId: 'cat2', status: RoomStatus.CLEANING, floor: 1, maintenanceHistory: [] },
-  { id: '4', number: '201', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
-  { id: '5', number: '202', categoryId: 'cat3', status: RoomStatus.MAINTENANCE, floor: 2, maintenanceHistory: [] },
-  { id: '6', number: '301', categoryId: 'cat3', status: RoomStatus.OCCUPIED, floor: 3, maintenanceHistory: [] },
-  { id: '7', number: '104', categoryId: 'cat2', status: RoomStatus.AVAILABLE, floor: 1, maintenanceHistory: [] },
-  { id: '8', number: '203', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
-  { id: '9', number: '204', categoryId: 'cat2', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
-  { id: '10', number: '302', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 3, maintenanceHistory: [] },
+  { id: '1', companyId: 'luxestay', number: '101', categoryId: 'cat1', status: RoomStatus.AVAILABLE, floor: 1, maintenanceHistory: [] },
+  { id: '2', companyId: 'luxestay', number: '102', categoryId: 'cat1', status: RoomStatus.OCCUPIED, floor: 1, maintenanceHistory: [] },
+  { id: '3', companyId: 'luxestay', number: '103', categoryId: 'cat2', status: RoomStatus.CLEANING, floor: 1, maintenanceHistory: [] },
+  { id: '4', companyId: 'luxestay', number: '201', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
+  { id: '5', companyId: 'luxestay', number: '202', categoryId: 'cat3', status: RoomStatus.MAINTENANCE, floor: 2, maintenanceHistory: [] },
+  { id: '6', companyId: 'luxestay', number: '301', categoryId: 'cat3', status: RoomStatus.OCCUPIED, floor: 3, maintenanceHistory: [] },
+  { id: '7', companyId: 'luxestay', number: '104', categoryId: 'cat2', status: RoomStatus.AVAILABLE, floor: 1, maintenanceHistory: [] },
+  { id: '8', companyId: 'luxestay', number: '203', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
+  { id: '9', companyId: 'luxestay', number: '204', categoryId: 'cat2', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
+  { id: '10', companyId: 'luxestay', number: '302', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 3, maintenanceHistory: [] },
 ];
 
 export const INITIAL_GUESTS: Guest[] = [
-  { id: 'g1', name: 'John Doe', email: 'john@example.com', phone: '+123456789', location: 'New York, USA', documentId: 'PASS123', nationality: 'USA', ageGroup: '36-50' },
-  { id: 'g2', name: 'Jane Smith', email: 'jane@example.com', phone: '+987654321', location: 'London, UK', documentId: 'ID987', nationality: 'UK', ageGroup: '26-35' },
-  { id: 'g3', name: 'Hans Mueller', email: 'hans@example.com', phone: '+49123456', location: 'Berlin, Germany', documentId: 'DE444', nationality: 'Germany', ageGroup: '50+' },
-  { id: 'g4', name: 'Yuki Tanaka', email: 'yuki@example.com', phone: '+81999888', location: 'Tokyo, Japan', documentId: 'JP555', nationality: 'Japan', ageGroup: '26-35' },
+  { id: 'g1', companyId: 'luxestay', name: 'John Doe', email: 'john@example.com', phone: '+123456789', location: 'New York, USA', documentId: 'PASS123', nationality: 'USA', ageGroup: '36-50' },
+  { id: 'g2', companyId: 'luxestay', name: 'Jane Smith', email: 'jane@example.com', phone: '+987654321', location: 'London, UK', documentId: 'ID987', nationality: 'UK', ageGroup: '26-35' },
+  { id: 'g3', companyId: 'luxestay', name: 'Hans Mueller', email: 'hans@example.com', phone: '+49123456', location: 'Berlin, Germany', documentId: 'DE444', nationality: 'Germany', ageGroup: '50+' },
+  { id: 'g4', companyId: 'luxestay', name: 'Yuki Tanaka', email: 'yuki@example.com', phone: '+81999888', location: 'Tokyo, Japan', documentId: 'JP555', nationality: 'Japan', ageGroup: '26-35' },
 ];
 
 export const INITIAL_BOOKINGS: Booking[] = [
@@ -216,6 +221,7 @@ export const INITIAL_BOOKINGS: Booking[] = [
 export const INITIAL_TASKS: Task[] = [
   {
     id: 't1',
+    companyId: 'luxestay',
     title: 'Deep cleaning Room 103',
     description: 'Full sanitized cleaning after check-out. Replace all linens and replenish mini-bar.',
     type: TaskType.CLEANING,
@@ -227,6 +233,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 't2',
+    companyId: 'luxestay',
     title: 'Fix AC in Room 202',
     description: 'Guest reported noise from the air conditioning unit during night time.',
     type: TaskType.MAINTENANCE,
@@ -238,6 +245,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 't3',
+    companyId: 'luxestay',
     title: 'Welcome Kit Delivery',
     description: 'Deliver premium VIP welcome fruit basket and champagne to Presidential Villa.',
     type: TaskType.SERVICE,

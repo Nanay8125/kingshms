@@ -21,7 +21,8 @@ import {
   Languages,
   Menu,
   X,
-  Utensils
+  Utensils,
+  Layers
 } from 'lucide-react';
 import { InAppNotification, StaffMember, UserRole, Language } from '../types';
 import { TRANSLATIONS } from '../constants';
@@ -66,6 +67,7 @@ const Layout: React.FC<LayoutProps> = ({
     { id: 'guests', label: t('guests'), icon: Users, roles: [UserRole.ADMIN, UserRole.MANAGEMENT, UserRole.FRONT_DESK] },
     { id: 'messages', label: t('messages'), icon: MessageCircle, roles: [UserRole.ADMIN, UserRole.MANAGEMENT, UserRole.FRONT_DESK] },
     { id: 'staff', label: t('staff'), icon: UserCircle2, roles: [UserRole.ADMIN, UserRole.MANAGEMENT] },
+    { id: 'categories', label: 'Room Categories', icon: Layers, roles: [UserRole.ADMIN, UserRole.MANAGEMENT] },
     { id: 'menu', label: 'Menu Management', icon: Utensils, roles: [UserRole.ADMIN, UserRole.MANAGEMENT] },
     { id: 'tasks', label: t('tasks'), icon: ClipboardList, roles: [UserRole.ADMIN, UserRole.MANAGEMENT, UserRole.FRONT_DESK, UserRole.HOUSEKEEPING, UserRole.MAINTENANCE] },
     { id: 'inbox', label: t('inbox'), icon: Send, badge: notificationCount, roles: [UserRole.ADMIN, UserRole.MANAGEMENT, UserRole.FRONT_DESK, UserRole.HOUSEKEEPING, UserRole.MAINTENANCE] },

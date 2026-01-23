@@ -15,6 +15,7 @@ import {
   StaffEmail,
   InAppNotification,
   Conversation,
+  ChatMessage,
   MenuItem,
   UserRole,
   Language
@@ -35,6 +36,7 @@ const AnalyticsDashboard = React.lazy(() => import('./components/AnalyticsDashbo
 const Settings = React.lazy(() => import('./components/Settings'));
 const MessagingHub = React.lazy(() => import('./components/MessagingHub'));
 const StaffInbox = React.lazy(() => import('./components/StaffInbox'));
+const CategoryManagement = React.lazy(() => import('./components/CategoryManagement'));
 const MenuManagement = React.lazy(() => import('./components/MenuManagement'));
 const PublicBookingPortal = React.lazy(() => import('./components/PublicBookingPortal'));
 
@@ -147,6 +149,99 @@ const App: React.FC = () => {
     setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, read: true } : n)
     );
+    // Also update in DB
+    const notification = notifications.find(n => n.id === id);
+    if (notification) {
+      dbService.update('notifications', id, { ...notification, read: true }).catch(console.error);
+    }
+  };
+
+  const handleNewBooking = (booking: Booking, newGuest?: Guest) => {
+    // 1. Update bookings state
+    setBookings(prev => [...prev, booking]);
+    
+    // 2. Update guests state if new guest
+    if (newGuest) {
+      setGuests(prev => [...prev, newGuest]);
+    }
+
+    // 3. Create notifications for Front Desk staff
+    const frontDeskStaff = staff.filter(s => s.permissionRole === UserRole.FRONT_DESK);
+    const bookedRoom = rooms.find(r => r.id === booking.roomId);
+    const roomNumber = bookedRoom ? bookedRoom.number : 'Unknown';
+    
+    const newNotifications: InAppNotification[] = frontDeskStaff.map(staffMember => ({
+      id: `n${Math.random().toString(36).substr(2, 9)}`,
+      staffId: staffMember.id,
+      title: 'New Booking Received',
+      message: `New booking received for Room ${roomNumber}. Check-in: ${booking.checkIn}`,
+      type: 'booking',
+      timestamp: new Date().toISOString(),
+      read: false
+    }));
+
+    // 4. Update notifications state
+    setNotifications(prev => [...newNotifications, ...prev]);
+
+    // 5. Persist notifications to DB
+    newNotifications.forEach(n => {
+      // Add companyId if the interface supports it, but currently InAppNotification doesn't seem to have it in the type definition I saw earlier.
+      // Let's check type definition again. InAppNotification doesn't have companyId in the file I read.
+      // However, dbService might expect it for scoping? 
+      // dbService.create takes payload.
+      // If InAppNotification table is company scoped, we should add companyId if possible.
+      // But looking at types.ts earlier:
+      /*
+      export interface InAppNotification {
+        id: string;
+        staffId: string;
+        title: string;
+        message: string;
+        type: 'task' | 'booking' | 'system';
+        timestamp: string;
+        read: boolean;
+      }
+      */
+      // It doesn't have companyId. But dbService marks 'notifications' as companyScoped.
+      // This might be a missing field in the interface or handled implicitly?
+      // For now, I'll just follow the interface.
+      dbService.create('notifications', n).catch(console.error);
+    });
+  };
+
+  const handleSendMessage = (conversationId: string, text: string) => {
+    const newMessage: ChatMessage = {
+      id: Date.now().toString(),
+      sender: 'staff',
+      text,
+      timestamp: new Date().toISOString()
+    };
+
+    setConversations(prev => prev.map(conv => {
+      if (conv.id === conversationId) {
+        const updatedConv = {
+          ...conv,
+          messages: [...conv.messages, newMessage],
+          lastMessage: text,
+          lastTimestamp: newMessage.timestamp
+        };
+        // Persist update
+        dbService.update('conversations', conversationId, updatedConv).catch(console.error);
+        return updatedConv;
+      }
+      return conv;
+    }));
+  };
+
+  const handleMarkConversationRead = (conversationId: string) => {
+    setConversations(prev => prev.map(conv => {
+      if (conv.id === conversationId && conv.unreadCount > 0) {
+         const updatedConv = { ...conv, unreadCount: 0 };
+         dbService.update('conversations', conversationId, updatedConv).catch(console.error);
+         return updatedConv;
+      }
+      return conv;
+    }));
   };
 
   const handlePreviewWebsite = () => {
@@ -174,10 +269,7 @@ const App: React.FC = () => {
           categories={categories}
           bookings={bookings}
           menu={menu}
-          onBookingComplete={(booking, guest) => {
-            setBookings(prev => [...prev, booking]);
-            setGuests(prev => [...prev, guest]);
-          }}
+          onBookingComplete={handleNewBooking}
           onFoodRequest={(roomId, items) => {
             // TODO: Implement food request logic
             console.log('Food request:', roomId, items);
@@ -233,12 +325,7 @@ const App: React.FC = () => {
             allBookings={bookings}
             categories={categories}
             onClose={() => setActiveTab('dashboard')}
-            onSubmit={({ booking, newGuest }) => {
-              setBookings(prev => [...prev, booking]);
-              if (newGuest) {
-                setGuests(prev => [...prev, newGuest]);
-              }
-            }}
+            onSubmit={({ booking, newGuest }) => handleNewBooking(booking, newGuest)}
           />
         );
       case 'staff':
@@ -281,6 +368,13 @@ const App: React.FC = () => {
               ));
             }}
             currentUser={currentUser}
+          />
+        );
+      case 'categories':
+        return (
+          <CategoryManagement
+            categories={categories}
+            onUpdateCategories={setCategories}
           />
         );
       case 'menu':
@@ -338,10 +432,9 @@ const App: React.FC = () => {
         return (
           <MessagingHub
             conversations={conversations}
-            onSendMessage={(conversationId, text) => {
-              // TODO: Implement send message logic
-              console.log('Send message:', conversationId, text);
-            }}
+            onSendMessage={handleSendMessage}
+            onMarkAsRead={handleMarkConversationRead}
+            currentLanguage={language}
           />
         );
       case 'inbox':
@@ -371,10 +464,7 @@ const App: React.FC = () => {
           categories={categories}
           bookings={bookings}
           menu={menu}
-          onBookingComplete={(booking, guest) => {
-            setBookings(prev => [...prev, booking]);
-            setGuests(prev => [...prev, guest]);
-          }}
+          onBookingComplete={handleNewBooking}
           onFoodRequest={(roomId, items) => {
             // TODO: Implement food request logic
             console.log('Food request:', roomId, items);

@@ -45,9 +45,23 @@ const getFallbackData = (table: TableName): any[] => {
 class DatabaseService {
     private isCompanyScoped(table: TableName): boolean {
         const companyScopedTables: TableName[] = [
-            'rooms', 'bookings', 'guests', 'tasks', 'staff', 'feedback', 'emails', 'notifications', 'conversations', 'menu'
+            'rooms', 'bookings', 'guests', 'categories', 'tasks', 'staff', 'feedback', 'emails', 'notifications', 'conversations', 'menu'
         ];
         return companyScopedTables.includes(table);
+    }
+
+    private getLocalData(table: TableName): any[] {
+        if (typeof window === 'undefined' || !window.localStorage) {
+            return getFallbackData(table);
+        }
+        const data = localStorage.getItem(`kingshms_${table}`);
+        return data ? JSON.parse(data) : getFallbackData(table);
+    }
+
+    private setLocalData(table: TableName, data: any[]): void {
+        if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.setItem(`kingshms_${table}`, JSON.stringify(data));
+        }
     }
 
     async getAll<T>(table: TableName, companyId?: string): Promise<T[]> {
@@ -64,8 +78,8 @@ class DatabaseService {
             return await response.json();
         } catch (error) {
             console.error('Fetch error:', error);
-            // Return fallback data for demo when API is not available
-            return getFallbackData(table) as T[];
+            // Return local data or fallback data for demo when API is not available
+            return this.getLocalData(table) as T[];
         }
     }
 
@@ -103,17 +117,27 @@ class DatabaseService {
             url += `?companyId=${encodeURIComponent(companyId)}`;
         }
 
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(sanitized)
-        });
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(sanitized)
+            });
 
-        if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.error || 'Creation failed');
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || 'Creation failed');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Create error:', error);
+            // For demo purposes, persist to localStorage when API is not available
+            const localData = this.getLocalData(table);
+            const newItem = { ...sanitized, id: sanitized.id || uuidv4() };
+            localData.push(newItem);
+            this.setLocalData(table, localData);
+            return newItem as T;
         }
-        return await response.json();
     }
 
     async update<T>(table: TableName, id: string, updates: any): Promise<T | undefined> {
@@ -132,8 +156,16 @@ class DatabaseService {
             return await response.json();
         } catch (error) {
             console.error('Update error:', error);
-            // For demo purposes, return the updates with the ID when API is not available
-            return { ...sanitized, id } as T;
+            // For demo purposes, persist to localStorage when API is not available
+            const localData = this.getLocalData(table);
+            const index = localData.findIndex(item => item.id === id);
+            if (index !== -1) {
+                const updatedItem = { ...localData[index], ...sanitized };
+                localData[index] = updatedItem;
+                this.setLocalData(table, localData);
+                return updatedItem as T;
+            }
+            return undefined;
         }
     }
 
@@ -145,8 +177,15 @@ class DatabaseService {
             return response.ok;
         } catch (error) {
             console.error('Delete error:', error);
-            // For demo purposes, return true when API is not available
-            return true;
+            // For demo purposes, persist to localStorage when API is not available
+            const localData = this.getLocalData(table);
+            const index = localData.findIndex(item => item.id === id);
+            if (index !== -1) {
+                localData.splice(index, 1);
+                this.setLocalData(table, localData);
+                return true;
+            }
+            return false;
         }
     }
 

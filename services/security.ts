@@ -80,8 +80,29 @@ export function sanitizeSearchQuery(query: string): string {
  * @param value - The value to validate
  * @returns True if valid number, false otherwise
  */
-export function validateNumber(value: string): boolean {
-  return !isNaN(Number(value)) && value.trim() !== '';
+export function validateNumber(value: string): boolean;
+export function validateNumber(value: number | string, options: { min?: number, max?: number }): number;
+export function validateNumber(value: number | string, options?: { min?: number, max?: number }): boolean | number {
+  const num = Number(value);
+  // Check if it's a valid number. For strings, ensure it's not empty string which Number() converts to 0.
+  const isValid = !isNaN(num) && (typeof value === 'number' || value.trim() !== '');
+
+  if (!options) {
+    return isValid;
+  }
+
+  if (!isValid) {
+    throw new Error('Invalid number');
+  }
+
+  if (options.min !== undefined && num < options.min) {
+    throw new Error(`Number must be at least ${options.min}`);
+  }
+  if (options.max !== undefined && num > options.max) {
+    throw new Error(`Number must be at most ${options.max}`);
+  }
+
+  return num;
 }
 
 /**

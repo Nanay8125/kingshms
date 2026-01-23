@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,5 +20,22 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const storage = getStorage(app);
 
-export { app, analytics };
+async function uploadCategoryImage(categoryId: string, file: File): Promise<string> {
+  const safeName = file.name.replace(/[^\w.\-]/g, '_');
+  const fileRef = ref(storage, `categories/${categoryId}/${Date.now()}-${safeName}`);
+  const snapshot = await uploadBytes(fileRef, file, { contentType: file.type });
+  return await getDownloadURL(snapshot.ref);
+}
+
+async function uploadCategoryGallery(categoryId: string, files: File[]): Promise<string[]> {
+  const urls: string[] = [];
+  for (const f of files) {
+    const url = await uploadCategoryImage(categoryId, f);
+    urls.push(url);
+  }
+  return urls;
+}
+
+export { app, analytics, storage, uploadCategoryImage, uploadCategoryGallery };

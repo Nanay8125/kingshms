@@ -417,7 +417,7 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
                 return (
                   <div key={cat.id} className={`bg-white rounded-[32px] overflow-hidden border border-slate-100 shadow-sm flex flex-col transition-all hover:shadow-2xl ${!isPossible ? 'opacity-50 grayscale' : ''}`}>
                     <div className="h-56 relative">
-                      <img src={`https://picsum.photos/seed/${cat.id}/600/400`} alt={`${cat.name} room`} className="w-full h-full object-cover" />
+                      <img src={cat.imageUrl || `https://picsum.photos/seed/${cat.id}/600/400`} alt={`${cat.name} room`} className="w-full h-full object-cover" />
                       <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur rounded-full text-[10px] font-black uppercase tracking-widest text-indigo-600">
                         {cat.name}
                       </div>
@@ -546,7 +546,7 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
                   <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs">Stay Summary</h3>
 
                   <div className="flex items-center gap-4">
-                    <img src={`https://picsum.photos/seed/${selectedCategory?.id}/100/100`} alt={`${selectedCategory?.name} room`} className="w-16 h-16 rounded-2xl object-cover" />
+                    <img src={selectedCategory?.imageUrl || `https://picsum.photos/seed/${selectedCategory?.id}/100/100`} alt={`${selectedCategory?.name} room`} className="w-16 h-16 rounded-2xl object-cover" />
                     <div>
                       <p className="font-bold text-slate-900">{selectedCategory?.name}</p>
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{guestCount} Guests • {nights} Nights</p>

@@ -169,12 +169,15 @@ export interface InAppNotification {
 
 export interface RoomCategory {
   id: string;
+  companyId: string;
   name: string;
   basePrice: number;
   optimizedPrice?: number;
   demandFactor?: 'low' | 'medium' | 'high';
   capacity: number;
   amenities: string[];
+  imageUrl?: string;
+  gallery?: string[];
 }
 
 export interface Room {
