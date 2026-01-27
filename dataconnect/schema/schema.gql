@@ -1,0 +1,53 @@
+type User @table {
+  username: String!
+  passwordHash: String!
+  role: String!
+  firstName: String
+  lastName: String
+  email: String
+  phoneNumber: String
+}
+
+type Guest @table {
+  firstName: String!
+  lastName: String!
+  email: String!
+  phoneNumber: String
+  address: String
+  notes: String
+}
+
+type RoomType @table {
+  name: String!
+  basePrice: Float!
+  description: String
+  maxOccupancy: Int
+  amenities: [String]
+}
+
+type Room @table {
+  roomNumber: String!
+  roomType: RoomType!
+  status: String
+  notes: String
+}
+
+type Booking @table {
+  guest: Guest!
+  room: Room!
+  checkInDate: Date!
+  checkOutDate: Date!
+  totalPrice: Float!
+  bookingStatus: String
+  specialRequests: String
+}
+
+type MaintenanceRequest @table {
+  room: Room!
+  description: String!
+  requestDate: Timestamp!
+  assignedTo: User
+  status: String
+  resolutionNotes: String
+  priority: String
+}

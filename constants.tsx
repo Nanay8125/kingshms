@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 import { Room, RoomStatus, Guest, Booking, RoomCategory, Task, TaskStatus, TaskPriority, TaskType, Feedback, StaffMember, StaffStatus, TaskTemplate, UserRole, MenuItem, Conversation, Language, Company } from './types';
 
 export const INITIAL_COMPANIES: Company[] = [
@@ -19,6 +20,9 @@ export const INITIAL_COMPANIES: Company[] = [
     status: 'active'
   }
 ];
+=======
+import { Room, RoomStatus, Guest, Booking, RoomCategory, Task, TaskStatus, TaskPriority, TaskType, Feedback, StaffMember, StaffStatus, TaskTemplate, UserRole, MenuItem, Conversation, Language } from './types';
+>>>>>>> gh-pages-local
 
 export const TRANSLATIONS: Record<Language, any> = {
   en: {
@@ -199,14 +203,43 @@ export const INITIAL_STAFF: StaffMember[] = [
       { id: 'ak7', key: 'admin_ghi789jkl012', createdAt: '2024-01-01T00:00:00Z', lastUsed: '2024-05-21T09:30:00Z', description: 'Full Admin Access', active: true },
       { id: 'ak8', key: 'admin_mno345pqr678', createdAt: '2024-03-15T10:00:00Z', description: 'Emergency Access', active: true },
       { id: 'ak9', key: 'admin_stu901vwx234', createdAt: '2024-02-28T15:45:00Z', description: 'Revoked Key', active: false }
+<<<<<<< HEAD
+=======
+    ],
+    restCredentials: [
+      {
+        id: 'rc1',
+        service: 'firebase' as any,
+        apiKey: 'AIzaSyC_dX5748d3xPWb-eRVJxmllcGrechODPM',
+        createdAt: '2024-01-01T00:00:00Z',
+        description: 'Firebase Production API Key',
+        active: true,
+        encrypted: false
+      },
+      {
+        id: 'rc2',
+        service: 'gemini' as any,
+        apiKey: 'demo_gemini_api_key_12345',
+        createdAt: '2024-02-15T10:00:00Z',
+        description: 'Google Gemini AI Service',
+        active: true,
+        encrypted: false
+      }
+>>>>>>> gh-pages-local
     ]
   },
 ];
 
 export const INITIAL_CATEGORIES: RoomCategory[] = [
+<<<<<<< HEAD
   { id: 'cat1', name: 'Standard Room', basePrice: 100, capacity: 2, amenities: ['Free Wi-Fi', 'TV', 'Work Desk', 'Mini Fridge', 'Air Conditioning'] },
   { id: 'cat2', name: 'Superior Room', basePrice: 150, capacity: 2, amenities: ['Free Wi-Fi', 'Mini Bar', 'Smart TV', 'Balcony', 'Room Service', 'Air Conditioning'] },
   { id: 'cat3', name: 'Deluxe Room', basePrice: 200, capacity: 2, amenities: ['Free Wi-Fi', 'Mini Bar', 'Ocean View', 'Smart TV', 'Balcony', 'Nespresso Machine', 'Bath Tub', 'Room Service'] },
+=======
+  { id: 'cat1', companyId: 'luxestay', name: 'Standard Room', basePrice: 100, capacity: 2, amenities: ['Free Wi-Fi', 'TV', 'Work Desk', 'Mini Fridge', 'Air Conditioning'] },
+  { id: 'cat2', companyId: 'luxestay', name: 'Superior Room', basePrice: 150, capacity: 2, amenities: ['Free Wi-Fi', 'Mini Bar', 'Smart TV', 'Balcony', 'Room Service', 'Air Conditioning'] },
+  { id: 'cat3', companyId: 'luxestay', name: 'Deluxe Room', basePrice: 200, capacity: 2, amenities: ['Free Wi-Fi', 'Mini Bar', 'Ocean View', 'Smart TV', 'Balcony', 'Nespresso Machine', 'Bath Tub', 'Room Service'] },
+>>>>>>> gh-pages-local
 ];
 
 export const INITIAL_ROOMS: Room[] = [

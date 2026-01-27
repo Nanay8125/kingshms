@@ -21,6 +21,7 @@ import { generateChatSuggestions, translateText } from '../services/geminiServic
 interface MessagingHubProps {
   conversations: Conversation[];
   onSendMessage: (conversationId: string, text: string) => void;
+<<<<<<< HEAD
 }
 
 const MessagingHub: React.FC<MessagingHubProps> = ({ conversations, onSendMessage }) => {
@@ -30,6 +31,34 @@ const MessagingHub: React.FC<MessagingHubProps> = ({ conversations, onSendMessag
   const [isSuggesting, setIsSuggesting] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+=======
+  onMarkAsRead?: (conversationId: string) => void;
+  currentLanguage?: string;
+}
+
+const MessagingHub: React.FC<MessagingHubProps> = ({ 
+  conversations, 
+  onSendMessage, 
+  onMarkAsRead,
+  currentLanguage = 'en'
+}) => {
+  const [selectedId, setSelectedId] = useState<string | null>(conversations[0]?.id || null);
+  const [inputText, setInputText] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [isSuggesting, setIsSuggesting] = useState(false);
+  const [translations, setTranslations] = useState<{ [key: string]: string }>({});
+  const [filter, setFilter] = useState<'all' | 'unread'>('all');
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  const filteredConversations = conversations.filter(c => {
+    const matchesSearch = c.guestName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         c.roomNumber.includes(searchQuery);
+    const matchesFilter = filter === 'all' || (filter === 'unread' && c.unreadCount > 0);
+    return matchesSearch && matchesFilter;
+  });
+
+>>>>>>> gh-pages-local
   const selectedConversation = conversations.find(c => c.id === selectedId);
 
   useEffect(() => {
@@ -38,12 +67,22 @@ const MessagingHub: React.FC<MessagingHubProps> = ({ conversations, onSendMessag
     }
     if (selectedConversation) {
       fetchSuggestions(selectedConversation);
+<<<<<<< HEAD
+=======
+      if (selectedConversation.unreadCount > 0 && onMarkAsRead) {
+        onMarkAsRead(selectedConversation.id);
+      }
+>>>>>>> gh-pages-local
     }
   }, [selectedId, selectedConversation?.messages.length]);
 
   const fetchSuggestions = async (conv: Conversation) => {
     setIsSuggesting(true);
+<<<<<<< HEAD
     const suggestions = await generateChatSuggestions(conv);
+=======
+    const suggestions = await generateChatSuggestions(conv.messages);
+>>>>>>> gh-pages-local
     setAiSuggestions(suggestions);
     setIsSuggesting(false);
   };
@@ -55,10 +94,23 @@ const MessagingHub: React.FC<MessagingHubProps> = ({ conversations, onSendMessag
   };
 
   const handleTranslate = async (msgId: string, text: string) => {
+<<<<<<< HEAD
     const translated = await translateText(text);
     // In a real app, you'd update state here. 
     // For this demo, we'll just show it in a temporary alert or logic.
     alert(`Translation: ${translated}`);
+=======
+    if (translations[msgId]) {
+        // Toggle off if already translated
+        const newTranslations = { ...translations };
+        delete newTranslations[msgId];
+        setTranslations(newTranslations);
+        return;
+    }
+
+    const translated = await translateText(text, currentLanguage);
+    setTranslations(prev => ({ ...prev, [msgId]: translated }));
+>>>>>>> gh-pages-local
   };
 
   return (
@@ -67,6 +119,7 @@ const MessagingHub: React.FC<MessagingHubProps> = ({ conversations, onSendMessag
       <div className="w-80 border-r border-slate-100 flex flex-col bg-slate-50/30">
         <div className="p-6 border-b border-slate-100">
           <h3 className="text-xl font-black text-slate-800 mb-4">Guest Messages</h3>
+<<<<<<< HEAD
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
@@ -74,11 +127,51 @@ const MessagingHub: React.FC<MessagingHubProps> = ({ conversations, onSendMessag
               placeholder="Search conversations..." 
               className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             />
+=======
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <input 
+                type="text" 
+                placeholder="Search conversations..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setFilter('all')}
+                className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors ${
+                  filter === 'all' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                }`}
+              >
+                All
+              </button>
+              <button 
+                onClick={() => setFilter('unread')}
+                className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors ${
+                  filter === 'unread' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                }`}
+              >
+                Unread
+              </button>
+            </div>
+>>>>>>> gh-pages-local
           </div>
         </div>
         
         <div className="flex-1 overflow-y-auto">
+<<<<<<< HEAD
           {conversations.map(conv => (
+=======
+          {filteredConversations.length === 0 ? (
+            <div className="p-8 text-center text-slate-400">
+              <p className="text-xs">No conversations found</p>
+            </div>
+          ) : (
+            filteredConversations.map(conv => (
+>>>>>>> gh-pages-local
             <button
               key={conv.id}
               onClick={() => setSelectedId(conv.id)}
@@ -104,7 +197,12 @@ const MessagingHub: React.FC<MessagingHubProps> = ({ conversations, onSendMessag
                 <p className="text-xs text-slate-500 line-clamp-1">{conv.lastMessage}</p>
               </div>
             </button>
+<<<<<<< HEAD
           ))}
+=======
+            ))
+          )}
+>>>>>>> gh-pages-local
         </div>
       </div>
 
@@ -140,10 +238,24 @@ const MessagingHub: React.FC<MessagingHubProps> = ({ conversations, onSendMessag
                         : 'bg-indigo-600 text-white rounded-tr-none'
                     }`}>
                       {msg.text}
+<<<<<<< HEAD
                       {msg.sender === 'guest' && (
                         <button 
                           onClick={() => handleTranslate(msg.id, msg.text)}
                           className="absolute -right-10 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-indigo-500 opacity-0 group-hover:opacity-100 transition-all"
+=======
+                      {translations[msg.id] && (
+                        <div className="mt-2 pt-2 border-t border-slate-100/50 text-indigo-500 text-xs font-medium">
+                          {translations[msg.id]}
+                        </div>
+                      )}
+                      {msg.sender === 'guest' && (
+                        <button 
+                          onClick={() => handleTranslate(msg.id, msg.text)}
+                          className={`absolute -right-10 top-1/2 -translate-y-1/2 p-2 rounded-full transition-all ${
+                            translations[msg.id] ? 'text-indigo-600 bg-indigo-50' : 'text-slate-300 hover:text-indigo-500 opacity-0 group-hover:opacity-100'
+                          }`}
+>>>>>>> gh-pages-local
                           title="Translate message"
                         >
                           <Languages size={14} />

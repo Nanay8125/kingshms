@@ -1,252 +1,135 @@
+import { RoomCategory, Booking } from '../types';
 
-import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
-import { Room, Booking, Guest, RoomCategory, MenuItem, Conversation } from "../types";
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
-export const generateChatSuggestions = async (
-  conversation: Conversation
-) => {
-  try {
-    const history = conversation.messages.slice(-5).map(m => `${m.sender}: ${m.text}`).join('\n');
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `
-        You are a luxury hotel front desk AI assistant.
-        Analyze this conversation between a guest and the hotel:
-        ${history}
-
-        Provide 3 short, professional suggested replies for the staff to send back to the guest.
-        Format your response as a simple JSON array of strings.
-      `,
-      config: { responseMimeType: "application/json" }
-    });
-
-    return JSON.parse(response.text);
-  } catch (error) {
-    console.error("Gemini Suggestions Error:", error);
-    return ["Sure, I can help with that.", "I will check on that for you.", "Is there anything else I can assist you with?"];
-  }
-};
-
-export const translateText = async (text: string) => {
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Translate the following text into English. If it is already in English, just return the original text. Text: "${text}"`,
-    });
-    return response.text;
-  } catch (error) {
-    return text;
-  }
-};
-
-export const getHotelAssistantResponse = async (
-  query: string,
-  context: { rooms: Room[]; bookings: Booking[]; guests: Guest[] }
-) => {
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `
-        You are an intelligent Hotel Operations Assistant for LuxeStay HMS.
-        Current Context:
-        - Rooms: ${JSON.stringify(context.rooms)}
-        - Active Bookings: ${JSON.stringify(context.bookings)}
-        - Guests: ${JSON.stringify(context.guests)}
-
-        User Question/Command: "${query}"
-
-        Instructions:
-        1. Provide helpful, concise answers based on the context.
-        2. If asked about room availability, suggest specific rooms.
-        3. If asked for a summary, provide key stats like occupancy (Occupied/Total).
-        4. Be professional and data-driven.
-      `,
-    });
-
-    return response.text;
-  } catch (error) {
-    console.error("Gemini Error:", error);
-    return "I'm sorry, I'm having trouble processing that request right now. Please try again.";
-  }
-};
-
-const requestHotelServiceDeclaration: FunctionDeclaration = {
-  name: 'request_hotel_service',
-  parameters: {
-    type: Type.OBJECT,
-    description: 'Request a specific hotel service (cleaning, towels, maintenance, etc.) for a guest room.',
-    properties: {
-      roomNumber: { type: Type.STRING, description: 'The room number requesting the service.' },
-      serviceType: { type: Type.STRING, enum: ['cleaning', 'maintenance', 'towel', 'pillows', 'other'], description: 'Type of service requested.' },
-      details: { type: Type.STRING, description: 'Specific details about the request.' },
-      priority: { type: Type.STRING, enum: ['low', 'medium', 'high'], description: 'Urgency of the request.' }
-    },
-    required: ['roomNumber', 'serviceType', 'details']
-  }
-};
-
-export const getGuestAssistantResponse = async (
-  query: string,
-  context: { menu: MenuItem[]; categories: RoomCategory[]; availableRooms: number }
-) => {
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `
-        You are the LuxeStay Digital Concierge. You assist guests with their stay.
-        
-        Hotel Information:
-        - Current Available Room Types: ${JSON.stringify(context.categories)}
-        - Total Rooms Available for Booking: ${context.availableRooms}
-        - Dining Menu: ${JSON.stringify(context.menu)}
-
-        Your Goal:
-        - Help guests book rooms.
-        - Answer questions about amenities (WiFi is free, all rooms have Smart TVs).
-        - Help guests order food from the menu.
-        - Help guests request services (like extra towels or room cleaning).
-
-        If a guest wants to order food, describe the items from the menu.
-        If a guest wants to request a service (towels, cleaning, etc.), use the request_hotel_service tool.
-
-        Guest Message: "${query}"
-      `,
-      config: {
-        tools: [{ functionDeclarations: [requestHotelServiceDeclaration] }]
-      }
-    });
-
-    return {
-      text: response.text,
-      functionCalls: response.functionCalls
-    };
-  } catch (error) {
-    console.error("Guest AI Error:", error);
-    return { text: "I'm here to help! What can I do for you today?" };
-  }
-};
-
-export const generateCheckInOutMessage = async (
-  type: 'in' | 'out',
-  guest: Guest,
-  room: Room
-) => {
-  try {
-    const prompt = type === 'in' 
-      ? `Generate a warm, professional, one-sentence welcome greeting for guest ${guest.name} checking into room ${room.number}. Mention we hope they enjoy their stay.`
-      : `Generate a polite, professional, one-sentence farewell greeting for guest ${guest.name} who just checked out of room ${room.number}. Thank them for staying at LuxeStay and wish them safe travels.`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-    });
-    return response.text;
-  } catch (error) {
-    return type === 'in' ? `Welcome, ${guest.name}!` : `Safe travels, ${guest.name}!`;
-  }
-};
-
-export const generateGuestFollowUpEmail = async (
-  guest: Guest,
-  booking: Booking
-) => {
-  try {
-    const prompt = `
-      Draft a warm, professional follow-up email to a guest who recently stayed at LuxeStay HMS.
-      Guest Name: ${guest.name}
-      Stay Dates: ${booking.checkIn} to ${booking.checkOut}
-      
-      Instructions:
-      1. Thank them for choosing LuxeStay.
-      2. Ask for feedback on their experience and invite them to leave a review.
-      3. Mention we hope to see them again soon.
-      4. Keep it under 3-4 sentences.
-      5. Format the response as:
-      SUBJECT: [Subject here]
-      BODY: [Body here]
-    `;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-    });
-
-    const text = response.text || "";
-    const subject = text.match(/SUBJECT:\s*(.*)/i)?.[1] || "Thank you for your stay at LuxeStay";
-    const body = text.split(/BODY:\s*/i)[1] || `Hi ${guest.name}, thank you for staying with us! We'd love to hear your feedback.`;
-
-    return { subject, body };
-  } catch (error) {
-    return {
-      subject: "Thank you for your stay at LuxeStay",
-      body: `Hi ${guest.name}, thank you for staying with us! We'd love to hear your feedback.`
-    };
-  }
-};
-
-export const generateRevenueStrategy = async (
+/**
+ * Generates revenue optimization strategy using AI analysis
+ * @param categories - Array of room categories
+ * @param bookings - Array of bookings
+ * @returns AI-generated revenue strategy recommendations
+ */
+export async function generateRevenueStrategy(
   categories: RoomCategory[],
   bookings: Booking[]
-) => {
-  try {
-    const prompt = `
-      You are a Revenue Management Consultant for a luxury hotel.
-      Analyze the following data and provide a concise pricing strategy for the next 7 days.
-      Room Categories: ${JSON.stringify(categories)}
-      Recent Bookings: ${JSON.stringify(bookings.slice(0, 10))}
+): Promise<string> {
+  // Simulate AI processing delay
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
-      Provide 3 actionable bullet points for pricing adjustments (e.g., increase suite rates by 10% for high demand).
-      Keep it professional and focused on yield management.
-    `;
+  // Calculate basic metrics
+  const totalRevenue = bookings.reduce((sum, b) => sum + b.totalPrice, 0);
+  const avgRate = bookings.length > 0 ? totalRevenue / bookings.length : 0;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-    });
-    return response.text;
-  } catch (error) {
-    return "Analyze current occupancy trends and consider dynamic pricing for high-demand suite categories.";
-  }
-};
+  // Analyze category performance
+  const categoryPerformance = categories.map(cat => {
+    const catBookings = bookings.filter(b =>
+      categories.find(c => c.id === cat.id)?.id === cat.id
+    );
+    const occupancy = catBookings.length;
+    const revenue = catBookings.reduce((sum, b) => sum + b.totalPrice, 0);
 
-export const generateStaffNotificationEmail = async (
-  type: 'booking_new' | 'check_in' | 'check_out',
-  data: { guest: Guest; room: Room; booking: Booking }
-) => {
-  try {
-    const dept = type === 'check_out' ? 'Housekeeping' : (type === 'booking_new' ? 'Front Desk' : 'Concierge');
-    const prompt = `
-      Draft a professional internal hotel email notification.
-      Type: ${type.replace('_', ' ')}
-      Guest: ${data.guest.name}
-      Room: ${data.room.number}
-      Recipient Department: ${dept}
-      
-      Instructions:
-      1. Write a clear Subject Line.
-      2. Write a concise Body with the relevant action required (e.g., if check-out, tell Housekeeping to prioritize cleaning room ${data.room.number}).
-      3. Format the response as:
-      SUBJECT: [Subject here]
-      BODY: [Body here]
-    `;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-    });
-
-    const text = response.text || "";
-    const subject = text.match(/SUBJECT:\s*(.*)/i)?.[1] || "Internal Notification";
-    const body = text.split(/BODY:\s*/i)[1] || "No content generated.";
-
-    return { subject, body, dept: dept as any };
-  } catch (error) {
     return {
-      subject: `Notification: ${type}`,
-      body: `Action required for Room ${data.room.number} regarding Guest ${data.guest.name}.`,
-      dept: 'Front Desk' as any
+      name: cat.name,
+      occupancy,
+      revenue,
+      avgRate: occupancy > 0 ? revenue / occupancy : 0,
+      basePrice: cat.basePrice
     };
+  });
+
+  // Generate strategy based on analysis
+  const highPerformers = categoryPerformance.filter(c => c.revenue > avgRate * 1.2);
+  const lowPerformers = categoryPerformance.filter(c => c.revenue < avgRate * 0.8);
+
+  let strategy = `📊 Revenue Optimization Strategy\n\n`;
+
+  strategy += `Current Performance:\n`;
+  strategy += `• Total Revenue: $${totalRevenue.toLocaleString()}\n`;
+  strategy += `• Average Daily Rate: $${avgRate.toFixed(2)}\n`;
+  strategy += `• Total Bookings: ${bookings.length}\n\n`;
+
+  if (highPerformers.length > 0) {
+    strategy += `🚀 High Performers:\n`;
+    highPerformers.forEach(cat => {
+      strategy += `• ${cat.name}: $${cat.revenue.toLocaleString()} revenue\n`;
+    });
+    strategy += `\n`;
   }
-};
+
+  if (lowPerformers.length > 0) {
+    strategy += `⚠️  Underperformers:\n`;
+    lowPerformers.forEach(cat => {
+      strategy += `• ${cat.name}: Consider promotional pricing\n`;
+    });
+    strategy += `\n`;
+  }
+
+  strategy += `💡 Recommendations:\n`;
+  strategy += `• Focus on high-demand periods for premium pricing\n`;
+  strategy += `• Implement dynamic pricing based on occupancy\n`;
+  strategy += `• Consider package deals for underperforming categories\n`;
+  strategy += `• Monitor competitor pricing weekly\n`;
+
+  return strategy;
+}
+
+/**
+ * Generates chat suggestions for messaging
+ * @param conversation - Array of chat messages
+ * @returns Array of suggested responses
+ */
+export async function generateChatSuggestions(conversation: any[]): Promise<string[]> {
+  // Simulate AI processing delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  const suggestions = [
+    "Thank you for your message. How can I assist you further?",
+    "I understand your concern. Let me help resolve this for you.",
+    "I'd be happy to provide more information about our services.",
+    "Please let me know if there's anything else I can help with.",
+    "Thank you for choosing our hotel. Is there anything else?"
+  ];
+
+  return suggestions.slice(0, 3);
+}
+
+/**
+ * Translates text to a specified language
+ * @param text - Text to translate
+ * @param targetLanguage - Target language code
+ * @returns Translated text
+ */
+export async function translateText(text: string, targetLanguage: string): Promise<string> {
+  // Simulate translation delay
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  // Simple mock translation - in real app this would use actual translation API
+  const translations: Record<string, Record<string, string>> = {
+    'Hello': {
+      'es': 'Hola',
+      'fr': 'Bonjour',
+      'de': 'Hallo',
+      'it': 'Ciao',
+      'pt': 'Olá'
+    },
+    'Thank you': {
+      'es': 'Gracias',
+      'fr': 'Merci',
+      'de': 'Danke',
+      'it': 'Grazie',
+      'pt': 'Obrigado'
+    },
+    'How are you?': {
+      'es': '¿Cómo estás?',
+      'fr': 'Comment allez-vous?',
+      'de': 'Wie geht es Ihnen?',
+      'it': 'Come stai?',
+      'pt': 'Como você está?'
+    }
+  };
+
+  // Check if we have a translation for this exact text
+  if (translations[text] && translations[text][targetLanguage]) {
+    return translations[text][targetLanguage];
+  }
+
+  // Return original text if no translation available
+  return text;
+}

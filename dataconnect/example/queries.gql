@@ -1,0 +1,60 @@
+mutation AddNewGuest(
+  $firstName: String!
+  $lastName: String!
+  $email: String!
+) @auth(level: USER) {
+  guest_insert(data: { firstName: $firstName, lastName: $lastName, email: $email })
+}
+
+query GetAvailableRooms(
+  $checkInDate: Date!
+  $checkOutDate: Date!
+  $maxOccupancy: Int!
+) @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  roomTypes(where: { maxOccupancy: { ge: $maxOccupancy } }) {
+    id
+    name
+    basePrice
+    description
+    maxOccupancy
+    rooms_on_roomType(
+      where: {
+        bookings_on_room: {
+          _or: [
+            { checkInDate: { le: $checkOutDate }, checkOutDate: { gt: $checkInDate } }
+            {
+              checkInDate: { lt: $checkOutDate }
+              checkOutDate: { ge: $checkInDate }
+            }
+            { checkInDate: { eq: $checkInDate }, checkOutDate: { eq: $checkOutDate } }
+          ]
+        }
+      }
+    ) {
+      id
+      roomNumber
+      status
+    }
+  }
+}
+
+mutation CreateNewMaintenanceRequest(
+  $roomId: UUID!
+  $description: String!
+  $priority: String!
+) @auth(level: USER) {
+  maintenanceRequest_insert(
+    data: { roomId: $roomId, description: $description, priority: $priority, requestDate_expr: "request.time" }
+  )
+}
+
+query GetUserMaintenanceRequests @auth(level: USER) {
+  maintenanceRequests(where: { assignedToId: { eq_expr: "auth.uid" } }) {
+    id
+    roomId
+    description
+    priority
+    requestDate
+    status
+  }
+}

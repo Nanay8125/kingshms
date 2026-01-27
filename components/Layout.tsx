@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> gh-pages-local
 import React, { useState } from 'react';
 import {
   LayoutDashboard,
@@ -22,7 +25,12 @@ import {
   Languages,
   Menu,
   X,
+<<<<<<< HEAD
   Utensils
+=======
+  Utensils,
+  Layers
+>>>>>>> gh-pages-local
 } from 'lucide-react';
 import { InAppNotification, StaffMember, UserRole, Language } from '../types';
 import { TRANSLATIONS } from '../constants';
@@ -41,10 +49,17 @@ interface LayoutProps {
   onLanguageChange: (lang: Language) => void;
 }
 
+<<<<<<< HEAD
 const Layout: React.FC<LayoutProps> = ({ 
   children, 
   activeTab, 
   setActiveTab, 
+=======
+const Layout: React.FC<LayoutProps> = ({
+  children,
+  activeTab,
+  setActiveTab,
+>>>>>>> gh-pages-local
   notificationCount = 0,
   inAppNotifications = [],
   // Fixed: explicitly typed the default function parameter to prevent "Expected 0 arguments" error
@@ -67,6 +82,10 @@ const Layout: React.FC<LayoutProps> = ({
     { id: 'guests', label: t('guests'), icon: Users, roles: [UserRole.ADMIN, UserRole.MANAGEMENT, UserRole.FRONT_DESK] },
     { id: 'messages', label: t('messages'), icon: MessageCircle, roles: [UserRole.ADMIN, UserRole.MANAGEMENT, UserRole.FRONT_DESK] },
     { id: 'staff', label: t('staff'), icon: UserCircle2, roles: [UserRole.ADMIN, UserRole.MANAGEMENT] },
+<<<<<<< HEAD
+=======
+    { id: 'categories', label: 'Room Categories', icon: Layers, roles: [UserRole.ADMIN, UserRole.MANAGEMENT] },
+>>>>>>> gh-pages-local
     { id: 'menu', label: 'Menu Management', icon: Utensils, roles: [UserRole.ADMIN, UserRole.MANAGEMENT] },
     { id: 'tasks', label: t('tasks'), icon: ClipboardList, roles: [UserRole.ADMIN, UserRole.MANAGEMENT, UserRole.FRONT_DESK, UserRole.HOUSEKEEPING, UserRole.MAINTENANCE] },
     { id: 'inbox', label: t('inbox'), icon: Send, badge: notificationCount, roles: [UserRole.ADMIN, UserRole.MANAGEMENT, UserRole.FRONT_DESK, UserRole.HOUSEKEEPING, UserRole.MAINTENANCE] },
@@ -88,7 +107,11 @@ const Layout: React.FC<LayoutProps> = ({
     <div className="flex h-screen bg-[#0f172a] overflow-hidden relative">
       {/* Mobile/Tablet Overlay */}
       {isSidebarOpen && (
+<<<<<<< HEAD
         <div 
+=======
+        <div
+>>>>>>> gh-pages-local
           className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -121,8 +144,13 @@ const Layout: React.FC<LayoutProps> = ({
                 key={item.id}
                 onClick={() => handleTabSelect(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all relative ${
+<<<<<<< HEAD
                   isActive 
                     ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20' 
+=======
+                  isActive
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/20'
+>>>>>>> gh-pages-local
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
@@ -139,7 +167,11 @@ const Layout: React.FC<LayoutProps> = ({
         </nav>
 
         <div className="p-4 border-t border-slate-800">
+<<<<<<< HEAD
           <button 
+=======
+          <button
+>>>>>>> gh-pages-local
             onClick={onLogout}
             className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-rose-400 hover:bg-rose-500/5 rounded-xl transition-all w-full"
           >
@@ -168,13 +200,21 @@ const Layout: React.FC<LayoutProps> = ({
           <div className="flex items-center gap-2 sm:gap-6">
             {/* Language Switcher */}
             <div className="flex items-center bg-slate-100 p-1 rounded-xl">
+<<<<<<< HEAD
                <button 
+=======
+               <button
+>>>>>>> gh-pages-local
                  onClick={() => onLanguageChange('en')}
                  className={`px-2 sm:px-3 py-1 rounded-lg text-[10px] font-black tracking-widest transition-all ${language === 'en' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                >
                  EN
                </button>
+<<<<<<< HEAD
                <button 
+=======
+               <button
+>>>>>>> gh-pages-local
                  onClick={() => onLanguageChange('fr')}
                  className={`px-2 sm:px-3 py-1 rounded-lg text-[10px] font-black tracking-widest transition-all ${language === 'fr' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                >
@@ -211,8 +251,13 @@ const Layout: React.FC<LayoutProps> = ({
                       inAppNotifications.map(notif => {
                         const targetStaff = staff.find(s => s.id === notif.staffId);
                         return (
+<<<<<<< HEAD
                           <div 
                             key={notif.id} 
+=======
+                          <div
+                            key={notif.id}
+>>>>>>> gh-pages-local
                             onClick={() => onMarkNotifRead(notif.id)}
                             className={`p-4 border-b border-slate-50 flex items-start gap-3 hover:bg-slate-50 cursor-pointer transition-colors ${!notif.read ? 'bg-indigo-50/30' : ''}`}
                           >

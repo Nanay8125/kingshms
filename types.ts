@@ -80,6 +80,29 @@ export interface AccessKey {
   active: boolean;
 }
 
+export enum APIService {
+  FIREBASE = 'firebase',
+  GEMINI = 'gemini',
+  PAYMENT = 'payment',
+  EMAIL = 'email',
+  SMS = 'sms'
+}
+
+export interface RESTCredential {
+  id: string;
+  service: APIService;
+  apiKey?: string;
+  secretKey?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  endpoint?: string;
+  createdAt: string;
+  lastUsed?: string;
+  description?: string;
+  active: boolean;
+  encrypted: boolean;
+}
+
 export interface StaffMember {
   id: string;
   companyId: string;
@@ -93,6 +116,7 @@ export interface StaffMember {
   avatar: string;
   phone: string;
   accessKeys?: AccessKey[];
+  restCredentials?: RESTCredential[];
 }
 
 export interface ChatMessage {
@@ -169,12 +193,15 @@ export interface InAppNotification {
 
 export interface RoomCategory {
   id: string;
+  companyId: string;
   name: string;
   basePrice: number;
   optimizedPrice?: number;
   demandFactor?: 'low' | 'medium' | 'high';
   capacity: number;
   amenities: string[];
+  imageUrl?: string;
+  gallery?: string[];
 }
 
 export interface Room {
@@ -215,9 +242,34 @@ export interface Booking {
   internalNotes?: string;
 }
 
+
 export interface DashboardStats {
   occupancyRate: number;
   totalRevenue: number;
   activeBookings: number;
   pendingCheckins: number;
 }
+
+export enum AuditAction {
+  CREATE = 'CREATE',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
+  LOGIN = 'LOGIN',
+  LOGOUT = 'LOGOUT',
+  ACCESS = 'ACCESS'
+}
+
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  userId: string;
+  userName: string;
+  companyId: string;
+  action: AuditAction;
+  resource: string; // e.g. 'rooms', 'bookings'
+  resourceId?: string;
+  details: string; // JSON string or plain text
+  ipAddress?: string;
+  userAgent?: string;
+}
+
