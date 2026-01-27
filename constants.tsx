@@ -180,6 +180,26 @@ export const INITIAL_STAFF: StaffMember[] = [
       { id: 'ak7', key: 'admin_ghi789jkl012', createdAt: '2024-01-01T00:00:00Z', lastUsed: '2024-05-21T09:30:00Z', description: 'Full Admin Access', active: true },
       { id: 'ak8', key: 'admin_mno345pqr678', createdAt: '2024-03-15T10:00:00Z', description: 'Emergency Access', active: true },
       { id: 'ak9', key: 'admin_stu901vwx234', createdAt: '2024-02-28T15:45:00Z', description: 'Revoked Key', active: false }
+    ],
+    restCredentials: [
+      {
+        id: 'rc1',
+        service: 'firebase' as any,
+        apiKey: 'AIzaSyC_dX5748d3xPWb-eRVJxmllcGrechODPM',
+        createdAt: '2024-01-01T00:00:00Z',
+        description: 'Firebase Production API Key',
+        active: true,
+        encrypted: false
+      },
+      {
+        id: 'rc2',
+        service: 'gemini' as any,
+        apiKey: 'demo_gemini_api_key_12345',
+        createdAt: '2024-02-15T10:00:00Z',
+        description: 'Google Gemini AI Service',
+        active: true,
+        encrypted: false
+      }
     ]
   },
 ];

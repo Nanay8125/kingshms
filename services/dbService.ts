@@ -3,7 +3,9 @@ import {
     sanitizeObject,
     isNoSQLInjection
 } from './security';
+import { logError, trackEvent } from './monitoringService';
 import { v4 as uuidv4 } from 'uuid';
+import { AuditLog, AuditAction } from '../types';
 import {
     INITIAL_ROOMS,
     INITIAL_BOOKINGS,
@@ -21,7 +23,7 @@ import {
 export type TableName =
     | 'companies' | 'rooms' | 'bookings' | 'guests' | 'categories'
     | 'tasks' | 'templates' | 'staff' | 'feedback' | 'emails'
-    | 'notifications' | 'conversations' | 'menu';
+    | 'notifications' | 'conversations' | 'menu' | 'audit_logs' | 'security_logs';
 
 const API_Base = 'http://localhost:3001/api';
 
@@ -77,7 +79,7 @@ class DatabaseService {
             }
             return await response.json();
         } catch (error) {
-            console.error('Fetch error:', error);
+            logError(error as Error, { table, companyId, action: 'getAll' });
             // Return local data or fallback data for demo when API is not available
             return this.getLocalData(table) as T[];
         }
@@ -128,14 +130,17 @@ class DatabaseService {
                 const err = await response.json();
                 throw new Error(err.error || 'Creation failed');
             }
-            return await response.json();
+            const result = await response.json();
+            trackEvent('resource_created', { table, companyId });
+            return result;
         } catch (error) {
-            console.error('Create error:', error);
+            logError(error as Error, { table, action: 'create', item: sanitized });
             // For demo purposes, persist to localStorage when API is not available
             const localData = this.getLocalData(table);
             const newItem = { ...sanitized, id: sanitized.id || uuidv4() };
             localData.push(newItem);
             this.setLocalData(table, localData);
+            trackEvent('resource_created_local', { table, companyId });
             return newItem as T;
         }
     }
@@ -194,6 +199,27 @@ class DatabaseService {
         // This is complex to support transactionally over simple REST API
         // For now, log warning
         console.warn('updateCollection not fully supported in API mode');
+    }
+
+    async addAuditLog(log: Omit<AuditLog, 'id' | 'timestamp'>): Promise<void> {
+        const fullLog: AuditLog = {
+            ...log,
+            id: uuidv4(),
+            timestamp: new Date().toISOString(),
+            ipAddress: 'detected-on-server', // In a real app, this would be from the request
+            userAgent: navigator.userAgent
+        };
+
+        try {
+            await this.create('audit_logs', fullLog, log.companyId);
+            trackEvent('audit_log_added', { action: log.action, resource: log.resource });
+        } catch (error) {
+            console.error("Failed to persist audit log:", error);
+            // Fallback to local storage if API is down
+            const localLogs = this.getLocalData('audit_logs');
+            localLogs.push(fullLog);
+            this.setLocalData('audit_logs', localLogs);
+        }
     }
 }
 

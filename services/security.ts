@@ -122,15 +122,26 @@ export function sanitizeUrl(url: string): string {
 /**
  * Sanitizes a string input to prevent injection attacks
  * @param input - The string to sanitize
+ * @param options - Sanitization options
  * @returns The sanitized string
  */
-export function sanitizeString(input: string): string {
+export function sanitizeString(input: string, options?: { allowHTML?: boolean; maxLength?: number }): string {
   if (typeof input !== 'string') {
     return '';
   }
 
-  // Remove potentially dangerous characters
-  return input.replace(/[<>'"&]/g, '');
+  let sanitized = input;
+
+  if (!options?.allowHTML) {
+    // Remove potentially dangerous characters
+    sanitized = sanitized.replace(/[<>'"&]/g, '');
+  }
+
+  if (options?.maxLength) {
+    sanitized = sanitized.substring(0, options.maxLength);
+  }
+
+  return sanitized;
 }
 
 /**

@@ -9,7 +9,7 @@ async function testPasswordHashing() {
   console.log('\n1. Testing Password Hashing...');
   try {
     // Import the auth service
-    const authService = (await import('./services/authService.ts')).authService;
+    const authService = (await import('/services/authService.ts')).authService;
 
     const testPassword = 'SecurePass123!';
     const hash1 = await authService.hashPassword(testPassword);
@@ -29,19 +29,19 @@ async function testPasswordHashing() {
 async function testInputValidation() {
   console.log('\n2. Testing Input Validation...');
   try {
-    const { authService } = await import('./services/authService.ts');
+    const { validateEmail, validatePassword } = await import('/services/authService.ts');
 
     // Test email validation
     const validEmails = ['user@luxestay.com', 'test.email@example.com'];
     const invalidEmails = ['invalid-email', 'user@', '@domain.com'];
 
     validEmails.forEach(email => {
-      const isValid = authService.validateEmail(email);
+      const isValid = validateEmail(email);
       console.log(`✅ Email validation (${email}):`, isValid);
     });
 
     invalidEmails.forEach(email => {
-      const isValid = authService.validateEmail(email);
+      const isValid = validateEmail(email);
       console.log(`❌ Email validation (${email}):`, !isValid);
     });
 
@@ -50,12 +50,12 @@ async function testInputValidation() {
     const invalidPasswords = ['short', 'nouppercase123!', 'NOLOWERCASE123!', 'NoSpecialChar123'];
 
     validPasswords.forEach(password => {
-      const result = authService.validatePassword(password);
+      const result = validatePassword(password);
       console.log(`✅ Password validation (${password}):`, result.isValid);
     });
 
     invalidPasswords.forEach(password => {
-      const result = authService.validatePassword(password);
+      const result = validatePassword(password);
       console.log(`❌ Password validation (${password}):`, !result.isValid, result.errors);
     });
 
@@ -68,10 +68,10 @@ async function testInputValidation() {
 async function testInputSanitization() {
   console.log('\n3. Testing Input Sanitization...');
   try {
-    const { authService } = await import('./services/authService.ts');
+    const { sanitizeInput } = await import('./services/authService.ts');
 
     const maliciousInput = '<script>alert("xss")</script>Hello World';
-    const sanitized = authService.sanitizeInput(maliciousInput);
+    const sanitized = sanitizeInput(maliciousInput);
 
     console.log('✅ Input sanitization works:', sanitized === 'Hello World');
     console.log('Original:', maliciousInput);
@@ -86,12 +86,12 @@ async function testInputSanitization() {
 async function testRoleBasedAccess() {
   console.log('\n4. Testing Role-Based Access Control...');
   try {
-    const { authService, UserRole } = await import('./services/authService.ts');
+    const { hasPermission, UserRole } = await import('/services/authService.ts');
 
     // Test role hierarchy
-    const adminAccess = authService.hasPermission(UserRole.ADMIN, UserRole.FRONT_DESK);
-    const frontDeskAccess = authService.hasPermission(UserRole.FRONT_DESK, UserRole.ADMIN);
-    const equalAccess = authService.hasPermission(UserRole.MANAGEMENT, UserRole.MANAGEMENT);
+    const adminAccess = hasPermission(UserRole.ADMIN, UserRole.FRONT_DESK);
+    const frontDeskAccess = hasPermission(UserRole.FRONT_DESK, UserRole.ADMIN);
+    const equalAccess = hasPermission(UserRole.MANAGEMENT, UserRole.MANAGEMENT);
 
     console.log('✅ Admin can access front desk functions:', adminAccess);
     console.log('❌ Front desk cannot access admin functions:', !frontDeskAccess);
@@ -106,7 +106,7 @@ async function testRoleBasedAccess() {
 async function testDataEncryption() {
   console.log('\n5. Testing Data Encryption...');
   try {
-    const { authService } = await import('./services/authService.ts');
+    const { authService } = await import('/services/authService.ts');
 
     const sensitiveData = 'Credit Card: 4111-1111-1111-1111';
     const encrypted = await authService.encryptData(sensitiveData);

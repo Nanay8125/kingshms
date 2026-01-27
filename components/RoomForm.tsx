@@ -55,7 +55,9 @@ const RoomForm: React.FC<RoomFormProps> = ({ categories, onClose, onSubmit }) =>
       number: sanitizeString(formData.number).trim(),
       floor: parseInt(formData.floor),
       categoryId: formData.categoryId,
-      status: formData.status as any
+      status: formData.status as any,
+      companyId: 'company-1', // TODO: Get from current user/company context
+      maintenanceHistory: []
     };
 
     onSubmit(roomData);

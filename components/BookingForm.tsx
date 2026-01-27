@@ -140,6 +140,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ rooms, guests, allBookings, c
       finalGuestId = `g-quick-${Math.random().toString(36).substr(2, 9)}`;
       newGuest = {
         id: finalGuestId,
+        companyId: 'company-1', // TODO: Get from current user/company context
         name: guestDetails.name,
         email: guestDetails.email,
         phone: guestDetails.phone,
