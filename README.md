@@ -6,22 +6,12 @@
 
 This contains everything you need to run your app locally.
 
-<<<<<<< HEAD
-View your app in AI Studio: <https://ai.studio/apps/drive/1IWyKiya8sBOnr94-59SCWWAEU1cDXZec>
-=======
 View your app in AI Studio: https://ai.studio/apps/drive/1IWyKiya8sBOnr94-59SCWWAEU1cDXZec
->>>>>>> gh-pages-local
 
 ## Run Locally
 
 **Prerequisites:**  Node.js
 
-<<<<<<< HEAD
-## Deployment
-
-For detailed deployment instructions, please examine [DEPLOYMENT.md](DEPLOYMENT.md).
-=======
->>>>>>> gh-pages-local
 
 1. Install dependencies:
    `npm install`

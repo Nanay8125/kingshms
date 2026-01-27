@@ -1,13 +1,8 @@
 
 import React, { useState, useRef } from 'react';
-<<<<<<< HEAD
-import { X, UserPlus, Briefcase, Phone, CheckCircle2, ShieldCheck, Mail, Shield, Smartphone, User, Camera, Trash2 } from 'lucide-react';
-import { StaffMember, StaffStatus, UserRole, AccessKey } from '../types';
-=======
 import { X, UserPlus, Briefcase, Phone, CheckCircle2, ShieldCheck, Mail, Shield, Smartphone, User, Camera, Trash2, Key, Globe, Plus, Minus } from 'lucide-react';
 import { StaffMember, StaffStatus, UserRole, AccessKey, RESTCredential, APIService } from '../types';
 import { authService } from '../services/authService';
->>>>>>> gh-pages-local
 
 interface StaffFormProps {
   onClose: () => void;
@@ -17,10 +12,7 @@ interface StaffFormProps {
 const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-<<<<<<< HEAD
-=======
   const [restCredentials, setRestCredentials] = useState<RESTCredential[]>([]);
->>>>>>> gh-pages-local
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -62,12 +54,6 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
     };
   };
 
-<<<<<<< HEAD
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newStaff: StaffMember = {
-      id: `s${Math.random().toString(36).substr(2, 5)}`,
-=======
   const addRestCredential = () => {
     const newCredential: RESTCredential = {
       id: `rc${Math.random().toString(36).substr(2, 5)}`,
@@ -118,7 +104,6 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
     const newStaff: StaffMember = {
       id: `s${Math.random().toString(36).substr(2, 5)}`,
       companyId: 'company-1', // TODO: Get from current user/company context
->>>>>>> gh-pages-local
       name: formData.name,
       email: formData.email,
       role: formData.role,
@@ -128,12 +113,8 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
       status: StaffStatus.AVAILABLE,
       avatar: avatarPreview || `https://picsum.photos/seed/${formData.name.replace(/\s/g, '')}/100`,
       password: 'password123',
-<<<<<<< HEAD
-      accessKeys: [generateAccessKey()]
-=======
       accessKeys: [generateAccessKey()],
       restCredentials: encryptedCredentials
->>>>>>> gh-pages-local
     };
     onSubmit(newStaff);
   };
@@ -179,14 +160,6 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
               </div>
               
               {avatarPreview && (
-<<<<<<< HEAD
-                <button 
-                  type="button"
-                  onClick={removeAvatar}
-                  className="absolute -top-2 -right-2 w-8 h-8 bg-rose-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-rose-600 transition-colors border-2 border-white"
-                  title="Remove photo"
-                >
-=======
                 <button
                   type="button"
                   onClick={removeAvatar}
@@ -194,7 +167,6 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
                   aria-label="Remove photo"
                 >
                   <span className="sr-only">Remove photo</span>
->>>>>>> gh-pages-local
                   <Trash2 size={14} />
                 </button>
               )}
@@ -202,21 +174,13 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-4">
               {avatarPreview ? 'Click to change image' : 'Click to upload profile photo'}
             </p>
-<<<<<<< HEAD
-            <input 
-              type="file" 
-=======
             <input
               type="file"
->>>>>>> gh-pages-local
               ref={fileInputRef}
               onChange={handleFileChange}
               accept="image/*"
               className="hidden"
-<<<<<<< HEAD
-=======
               aria-label="Upload profile photo"
->>>>>>> gh-pages-local
             />
           </div>
 
@@ -269,18 +233,11 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-<<<<<<< HEAD
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Department assignment</label>
-              <div className="relative">
-                <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <select
-=======
               <label htmlFor="department-select" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Department assignment</label>
               <div className="relative">
                 <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <select
                   id="department-select"
->>>>>>> gh-pages-local
                   className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:outline-none text-sm font-black text-slate-600 appearance-none cursor-pointer"
                   value={formData.department}
                   onChange={e => setFormData({ ...formData, department: e.target.value as any })}
@@ -296,18 +253,11 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
             </div>
             
             <div className="space-y-2">
-<<<<<<< HEAD
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">System Permission Role</label>
-              <div className="relative">
-                <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <select
-=======
               <label htmlFor="permission-select" className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">System Permission Role</label>
               <div className="relative">
                 <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <select
                   id="permission-select"
->>>>>>> gh-pages-local
                   className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:outline-none text-sm font-black text-slate-600 appearance-none cursor-pointer"
                   value={formData.permissionRole}
                   onChange={e => setFormData({ ...formData, permissionRole: e.target.value as UserRole })}
@@ -337,8 +287,6 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
             </div>
           </div>
 
-<<<<<<< HEAD
-=======
           {/* REST API Credentials Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -471,7 +419,6 @@ const StaffForm: React.FC<StaffFormProps> = ({ onClose, onSubmit }) => {
             )}
           </div>
 
->>>>>>> gh-pages-local
           <div className="flex gap-4 pt-6">
             <button
               type="button"

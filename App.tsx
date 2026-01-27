@@ -15,7 +15,7 @@ import {
   StaffEmail,
   InAppNotification,
   Conversation,
-<<<<<<< HEAD
+  ChatMessage,
   MenuItem,
   UserRole,
   Language,
@@ -29,18 +29,6 @@ import { TRANSLATIONS } from './constants';
 const Dashboard = React.lazy(() => import('./components/Dashboard'));
 const RoomGrid = React.lazy(() => import('./components/RoomGrid'));
 const RoomDetailsModal = React.lazy(() => import('./components/RoomDetailsModal'));
-=======
-  ChatMessage,
-  MenuItem,
-  UserRole,
-  Language
-} from './types';
-import { TRANSLATIONS } from './constants';
-
-// Lazy-loaded components for code-splitting with preloading
-const Dashboard = React.lazy(() => import('./components/Dashboard'));
-const RoomGrid = React.lazy(() => import('./components/RoomGrid'));
->>>>>>> gh-pages-local
 const BookingForm = React.lazy(() => import('./components/BookingForm'));
 const StaffManagement = React.lazy(() => import('./components/StaffManagement'));
 const StaffForm = React.lazy(() => import('./components/StaffForm'));
@@ -52,11 +40,6 @@ const AnalyticsDashboard = React.lazy(() => import('./components/AnalyticsDashbo
 const Settings = React.lazy(() => import('./components/Settings'));
 const MessagingHub = React.lazy(() => import('./components/MessagingHub'));
 const StaffInbox = React.lazy(() => import('./components/StaffInbox'));
-<<<<<<< HEAD
-const MenuManagement = React.lazy(() => import('./components/MenuManagement'));
-const PublicBookingPortal = React.lazy(() => import('./components/PublicBookingPortal'));
-
-=======
 const CategoryManagement = React.lazy(() => import('./components/CategoryManagement'));
 const MenuManagement = React.lazy(() => import('./components/MenuManagement'));
 const PublicBookingPortal = React.lazy(() => import('./components/PublicBookingPortal'));
@@ -71,12 +54,11 @@ const preloadCriticalComponents = () => {
 // Preload on app start
 if (typeof window !== 'undefined') {
   // Use requestIdleCallback if available, otherwise setTimeout
-  const schedulePreload = window.requestIdleCallback ||
+  const schedulePreload = (window as any).requestIdleCallback ||
     ((cb: () => void) => setTimeout(cb, 1));
   schedulePreload(preloadCriticalComponents);
 }
 
->>>>>>> gh-pages-local
 const App: React.FC = () => {
   // Check for public booking access
   const [isPublicBooking, setIsPublicBooking] = useState(false);
@@ -98,10 +80,6 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<StaffMember | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
-<<<<<<< HEAD
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-=======
->>>>>>> gh-pages-local
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [categories, setCategories] = useState<RoomCategory[]>([]);
@@ -113,56 +91,21 @@ const App: React.FC = () => {
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [menu, setMenu] = useState<MenuItem[]>([]);
-<<<<<<< HEAD
-  const [currentCompanyId, setCurrentCompanyId] = useState<string>('luxestay'); // Default to LuxeStay for now
-=======
->>>>>>> gh-pages-local
+  const [currentCompanyId, setCurrentCompanyId] = useState<string>('luxestay');
 
   // Initialize DB - Load essential data first for faster initial load
   useEffect(() => {
     const initEssential = async () => {
       setIsLoading(true);
-<<<<<<< HEAD
-      const [
-        r, b, c, t, s
-      ] = await Promise.all([
-        dbService.getAll('rooms'),
-        dbService.getAll('bookings'),
-        dbService.getAll('categories'),
-        dbService.getAll('tasks'),
-=======
 
       // Load only critical data first (rooms, categories, staff for login)
       const [r, c, s] = await Promise.all([
         dbService.getAll('rooms'),
         dbService.getAll('categories'),
->>>>>>> gh-pages-local
         dbService.getAll('staff')
       ]);
 
       setRooms(r as Room[]);
-<<<<<<< HEAD
-      setBookings(b as Booking[]);
-      setCategories(c as RoomCategory[]);
-      setTasks(t as Task[]);
-      setStaff(s as StaffMember[]);
-      setIsLoading(false);
-
-      // Load non-essential data in background
-      const loadNonEssential = async () => {
-        const [
-          g, tpl, f, e, n, conv, m
-        ] = await Promise.all([
-          dbService.getAll('guests', currentCompanyId),
-          dbService.getAll('templates'),
-          dbService.getAll('feedback', currentCompanyId),
-          dbService.getAll('emails'),
-          dbService.getAll('notifications'),
-          dbService.getAll('conversations', currentCompanyId),
-          dbService.getAll('menu', currentCompanyId)
-        ]);
-
-=======
       setCategories(c as RoomCategory[]);
       setStaff(s as StaffMember[]);
       setIsLoading(false);
@@ -174,18 +117,17 @@ const App: React.FC = () => {
         ] = await Promise.all([
           dbService.getAll('bookings'),
           dbService.getAll('tasks'),
-          dbService.getAll('guests'),
+          dbService.getAll('guests', currentCompanyId),
           dbService.getAll('templates'),
-          dbService.getAll('feedback'),
+          dbService.getAll('feedback', currentCompanyId),
           dbService.getAll('emails'),
           dbService.getAll('notifications'),
-          dbService.getAll('conversations'),
-          dbService.getAll('menu')
+          dbService.getAll('conversations', currentCompanyId),
+          dbService.getAll('menu', currentCompanyId)
         ]);
 
         setBookings(b as Booking[]);
         setTasks(t as Task[]);
->>>>>>> gh-pages-local
         setGuests(g as Guest[]);
         setTemplates(tpl as TaskTemplate[]);
         setFeedback(f as Feedback[]);
@@ -193,15 +135,10 @@ const App: React.FC = () => {
         setNotifications(n as InAppNotification[]);
         setConversations(conv as Conversation[]);
         setMenu(m as MenuItem[]);
-<<<<<<< HEAD
-      };
-      loadNonEssential();
-=======
       }, 100); // Small delay to prioritize initial render
->>>>>>> gh-pages-local
     };
     initEssential();
-  }, []);
+  }, [currentCompanyId]);
 
   const handleLogin = (user: StaffMember) => {
     setCurrentUser(user);
@@ -217,8 +154,6 @@ const App: React.FC = () => {
     setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, read: true } : n)
     );
-<<<<<<< HEAD
-=======
     // Also update in DB
     const notification = notifications.find(n => n.id === id);
     if (notification) {
@@ -227,19 +162,15 @@ const App: React.FC = () => {
   };
 
   const handleNewBooking = (booking: Booking, newGuest?: Guest) => {
-    // 1. Update bookings state
     setBookings(prev => [...prev, booking]);
-    
-    // 2. Update guests state if new guest
     if (newGuest) {
       setGuests(prev => [...prev, newGuest]);
     }
 
-    // 3. Create notifications for Front Desk staff
     const frontDeskStaff = staff.filter(s => s.permissionRole === UserRole.FRONT_DESK);
     const bookedRoom = rooms.find(r => r.id === booking.roomId);
     const roomNumber = bookedRoom ? bookedRoom.number : 'Unknown';
-    
+
     const newNotifications: InAppNotification[] = frontDeskStaff.map(staffMember => ({
       id: `n${Math.random().toString(36).substr(2, 9)}`,
       staffId: staffMember.id,
@@ -250,31 +181,8 @@ const App: React.FC = () => {
       read: false
     }));
 
-    // 4. Update notifications state
     setNotifications(prev => [...newNotifications, ...prev]);
-
-    // 5. Persist notifications to DB
     newNotifications.forEach(n => {
-      // Add companyId if the interface supports it, but currently InAppNotification doesn't seem to have it in the type definition I saw earlier.
-      // Let's check type definition again. InAppNotification doesn't have companyId in the file I read.
-      // However, dbService might expect it for scoping? 
-      // dbService.create takes payload.
-      // If InAppNotification table is company scoped, we should add companyId if possible.
-      // But looking at types.ts earlier:
-      /*
-      export interface InAppNotification {
-        id: string;
-        staffId: string;
-        title: string;
-        message: string;
-        type: 'task' | 'booking' | 'system';
-        timestamp: string;
-        read: boolean;
-      }
-      */
-      // It doesn't have companyId. But dbService marks 'notifications' as companyScoped.
-      // This might be a missing field in the interface or handled implicitly?
-      // For now, I'll just follow the interface.
       dbService.create('notifications', n).catch(console.error);
     });
   };
@@ -295,7 +203,6 @@ const App: React.FC = () => {
           lastMessage: text,
           lastTimestamp: newMessage.timestamp
         };
-        // Persist update
         dbService.update('conversations', conversationId, updatedConv).catch(console.error);
         return updatedConv;
       }
@@ -306,13 +213,12 @@ const App: React.FC = () => {
   const handleMarkConversationRead = (conversationId: string) => {
     setConversations(prev => prev.map(conv => {
       if (conv.id === conversationId && conv.unreadCount > 0) {
-         const updatedConv = { ...conv, unreadCount: 0 };
-         dbService.update('conversations', conversationId, updatedConv).catch(console.error);
-         return updatedConv;
+        const updatedConv = { ...conv, unreadCount: 0 };
+        dbService.update('conversations', conversationId, updatedConv).catch(console.error);
+        return updatedConv;
       }
       return conv;
     }));
->>>>>>> gh-pages-local
   };
 
   const handlePreviewWebsite = () => {
@@ -332,7 +238,6 @@ const App: React.FC = () => {
       );
     }
 
-    // Preview Guest Portal mode
     if (isPreviewMode) {
       return (
         <PublicBookingPortal
@@ -340,11 +245,7 @@ const App: React.FC = () => {
           categories={categories}
           bookings={bookings}
           menu={menu}
-<<<<<<< HEAD
-          onBookingComplete={(booking, guest) => {
-            setBookings(prev => [...prev, booking]);
-            setGuests(prev => [...prev, guest]);
-          }}
+          onBookingComplete={handleNewBooking}
           onFoodRequest={async (roomId, items) => {
             try {
               const room = rooms.find(r => r.id === roomId);
@@ -375,10 +276,10 @@ const App: React.FC = () => {
 
               const taskPayload = {
                 companyId: currentCompanyId,
-                title: `${type.replace('-', ' ').toUpperCase()}: Room ${roomNumber}`,
+                title: `${type.toString().replace('-', ' ').toUpperCase()}: Room ${roomNumber}`,
                 description: details,
-                type: type,
-                priority: priority,
+                type: type as unknown as TaskType,
+                priority: priority as unknown as TaskPriority,
                 status: TaskStatus.PENDING,
                 roomId: room?.id,
                 createdAt: new Date().toISOString()
@@ -389,16 +290,6 @@ const App: React.FC = () => {
             } catch (error) {
               console.error('Failed to create service request:', error);
             }
-=======
-          onBookingComplete={handleNewBooking}
-          onFoodRequest={(roomId, items) => {
-            // TODO: Implement food request logic
-            console.log('Food request:', roomId, items);
-          }}
-          onServiceRequest={(roomNumber, type, details, priority) => {
-            // TODO: Implement service request logic
-            console.log('Service request:', roomNumber, type, details, priority);
->>>>>>> gh-pages-local
           }}
           onExit={handleExitPreview}
         />
@@ -423,7 +314,6 @@ const App: React.FC = () => {
             rooms={rooms}
             categories={categories}
             bookings={bookings}
-<<<<<<< HEAD
             onStatusChange={async (roomId, newStatus) => {
               try {
                 const updatedRoom = await dbService.update<Room>('rooms', roomId, { status: newStatus });
@@ -432,11 +322,11 @@ const App: React.FC = () => {
                 }
               } catch (error) {
                 console.error('Failed to update room status:', error);
-                alert('Failed to update room status');
               }
             }}
             onRoomClick={(room) => {
-              setSelectedRoom(room);
+              // In a full implementation, this could open RoomDetailsModal
+              console.log('Room clicked:', room);
             }}
             onAddRoom={async (roomData) => {
               try {
@@ -448,23 +338,7 @@ const App: React.FC = () => {
                 setRooms(prev => [...prev, createdRoom]);
               } catch (error) {
                 console.error('Failed to create room:', error);
-                alert('Failed to create room');
               }
-=======
-            onStatusChange={(roomId, newStatus) => {
-              setRooms(prev => prev.map(r => r.id === roomId ? { ...r, status: newStatus } : r));
-            }}
-            onRoomClick={(room) => {
-              // TODO: Implement room details modal or navigation
-              console.log('Room clicked:', room);
-            }}
-            onAddRoom={(roomData) => {
-              const newRoom: Room = {
-                ...roomData,
-                id: `r${Math.random().toString(36).substr(2, 9)}`
-              };
-              setRooms(prev => [...prev, newRoom]);
->>>>>>> gh-pages-local
             }}
           />
         );
@@ -476,16 +350,7 @@ const App: React.FC = () => {
             allBookings={bookings}
             categories={categories}
             onClose={() => setActiveTab('dashboard')}
-<<<<<<< HEAD
-            onSubmit={({ booking, newGuest }) => {
-              setBookings(prev => [...prev, booking]);
-              if (newGuest) {
-                setGuests(prev => [...prev, newGuest]);
-              }
-            }}
-=======
             onSubmit={({ booking, newGuest }) => handleNewBooking(booking, newGuest)}
->>>>>>> gh-pages-local
           />
         );
       case 'staff':
@@ -493,7 +358,6 @@ const App: React.FC = () => {
           <StaffManagement
             staff={staff}
             tasks={tasks}
-<<<<<<< HEAD
             onUpdateStaffStatus={async (id, status) => {
               try {
                 const updatedStaff = await dbService.update<StaffMember>('staff', id, { status });
@@ -502,7 +366,6 @@ const App: React.FC = () => {
                 }
               } catch (error) {
                 console.error('Failed to update staff status:', error);
-                alert('Failed to update status');
               }
             }}
             onAddStaff={() => setShowStaffForm(true)}
@@ -515,7 +378,6 @@ const App: React.FC = () => {
                   }
                 } catch (error) {
                   console.error('Failed to delete staff:', error);
-                  alert('Failed to delete staff member');
                 }
               }
             }}
@@ -541,7 +403,6 @@ const App: React.FC = () => {
                 }
               } catch (error) {
                 console.error('Failed to generate access key:', error);
-                alert('Failed to generate access key');
               }
             }}
             onRevokeAccessKey={async (staffId, keyId) => {
@@ -560,49 +421,11 @@ const App: React.FC = () => {
                 }
               } catch (error) {
                 console.error('Failed to revoke access key:', error);
-                alert('Failed to revoke access key');
               }
-=======
-            onUpdateStaffStatus={(id, status) => {
-              setStaff(prev => prev.map(s => s.id === id ? { ...s, status } : s));
-            }}
-            onAddStaff={() => setShowStaffForm(true)}
-            onDeleteStaff={(id) => {
-              setStaff(prev => prev.filter(s => s.id !== id));
-            }}
-            onGenerateAccessKey={(staffId, description) => {
-              const key = `${staff.find(s => s.id === staffId)?.department.toLowerCase().substring(0, 2) || 'xx'}_${Math.random().toString(36).substring(2, 15)}`;
-              const newKey = {
-                id: `ak${Math.random().toString(36).substr(2, 5)}`,
-                key,
-                createdAt: new Date().toISOString(),
-                description: description || 'Generated Access Key',
-                active: true
-              };
-              setStaff(prev => prev.map(s =>
-                s.id === staffId
-                  ? { ...s, accessKeys: [...(s.accessKeys || []), newKey] }
-                  : s
-              ));
-            }}
-            onRevokeAccessKey={(staffId, keyId) => {
-              setStaff(prev => prev.map(s =>
-                s.id === staffId
-                  ? {
-                      ...s,
-                      accessKeys: s.accessKeys?.map(k =>
-                        k.id === keyId ? { ...k, active: false } : k
-                      )
-                    }
-                  : s
-              ));
->>>>>>> gh-pages-local
             }}
             currentUser={currentUser}
           />
         );
-<<<<<<< HEAD
-=======
       case 'categories':
         return (
           <CategoryManagement
@@ -610,7 +433,6 @@ const App: React.FC = () => {
             onUpdateCategories={setCategories}
           />
         );
->>>>>>> gh-pages-local
       case 'menu':
         return (
           <MenuManagement
@@ -625,7 +447,6 @@ const App: React.FC = () => {
             rooms={rooms}
             staff={staff}
             templates={templates}
-<<<<<<< HEAD
             onUpdateStatus={async (taskId, status) => {
               try {
                 const updatedTask = await dbService.update<Task>('tasks', taskId, { status });
@@ -655,35 +476,21 @@ const App: React.FC = () => {
               } catch (error) {
                 console.error('Failed to update task assignment:', error);
               }
-=======
-            onUpdateStatus={(taskId, status) => {
-              setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status } : t));
-            }}
-            onUpdatePriority={(taskId, priority) => {
-              setTasks(prev => prev.map(t => t.id === taskId ? { ...t, priority } : t));
-            }}
-            onUpdateAssignedStaff={(taskId, staffId) => {
-              setTasks(prev => prev.map(t => t.id === taskId ? { ...t, assignedStaffId: staffId } : t));
->>>>>>> gh-pages-local
             }}
             onReorderTask={(taskId, newStatus, targetTaskId) => {
-              // TODO: Implement task reordering logic
               console.log('Reorder task:', taskId, newStatus, targetTaskId);
             }}
             onAddTask={() => setShowTaskForm(true)}
             onAddTemplate={() => {
-              // TODO: Implement add template modal
               console.log('Add template');
             }}
             onDeleteTemplate={(id) => {
               setTemplates(prev => prev.filter(t => t.id !== id));
             }}
             onEditTemplate={(template) => {
-              // TODO: Implement edit template modal
               console.log('Edit template:', template);
             }}
             onUseTemplate={(template) => {
-              // TODO: Implement use template logic
               console.log('Use template:', template);
             }}
           />
@@ -698,16 +505,9 @@ const App: React.FC = () => {
         return (
           <MessagingHub
             conversations={conversations}
-<<<<<<< HEAD
-            onSendMessage={(conversationId, text) => {
-              // TODO: Implement send message logic
-              console.log('Send message:', conversationId, text);
-            }}
-=======
             onSendMessage={handleSendMessage}
             onMarkAsRead={handleMarkConversationRead}
             currentLanguage={language}
->>>>>>> gh-pages-local
           />
         );
       case 'inbox':
@@ -728,7 +528,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Public booking portal access (no authentication required)
   if (isPublicBooking) {
     return (
       <Suspense fallback={<div className="flex items-center justify-center h-screen bg-slate-50"><div className="text-slate-600">Loading Booking Portal...</div></div>}>
@@ -737,24 +536,14 @@ const App: React.FC = () => {
           categories={categories}
           bookings={bookings}
           menu={menu}
-<<<<<<< HEAD
-          onBookingComplete={(booking, guest) => {
-            setBookings(prev => [...prev, booking]);
-            setGuests(prev => [...prev, guest]);
-          }}
-=======
           onBookingComplete={handleNewBooking}
->>>>>>> gh-pages-local
           onFoodRequest={(roomId, items) => {
-            // TODO: Implement food request logic
             console.log('Food request:', roomId, items);
           }}
           onServiceRequest={(roomNumber, type, details, priority) => {
-            // TODO: Implement service request logic
             console.log('Service request:', roomNumber, type, details, priority);
           }}
           onExit={() => {
-            // Redirect to staff portal or home
             if (typeof window !== 'undefined') {
               window.location.href = window.location.pathname;
             }
@@ -764,7 +553,6 @@ const App: React.FC = () => {
     );
   }
 
-  // Show login form if not logged in
   if (!isLoggedIn || !currentUser) {
     return (
       <LoginForm
@@ -774,111 +562,23 @@ const App: React.FC = () => {
     );
   }
 
-  if (isPreviewMode) {
-    return (
-      <Suspense fallback={<div className="flex items-center justify-center h-full min-h-screen bg-slate-50"><div className="text-slate-600">Loading Preview...</div></div>}>
+  return (
+    <Layout
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      notificationCount={notifications.filter(n => !n.read).length}
+      inAppNotifications={notifications}
+      onMarkNotifRead={handleMarkNotificationRead}
+      staff={staff}
+      currentUser={currentUser}
+      onLogout={handleLogout}
+      language={language}
+      onLanguageChange={setLanguage}
+    >
+      <Suspense fallback={<div className="flex items-center justify-center h-full text-white">Loading...</div>}>
         {renderContent()}
       </Suspense>
-    );
-  }
-
-  return (
-    <>
-      <Layout
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        notificationCount={notifications.filter(n => !n.read).length}
-        inAppNotifications={notifications}
-        onMarkNotifRead={handleMarkNotificationRead}
-        staff={staff}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-        language={language}
-        onLanguageChange={setLanguage}
-      >
-        <Suspense fallback={<div className="flex items-center justify-center h-full"><div className="text-white">Loading...</div></div>}>
-          {renderContent()}
-        </Suspense>
-      </Layout>
-
-      {showStaffForm && (
-        <Suspense fallback={<div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[70]"><div className="text-white">Loading...</div></div>}>
-          <StaffForm
-            onClose={() => setShowStaffForm(false)}
-<<<<<<< HEAD
-            onSubmit={async (newStaffData) => {
-              try {
-                const staffPayload = {
-                  ...newStaffData,
-                  companyId: currentCompanyId,
-                  // Ensure default fields are set if needed
-                  accessKeys: [],
-                  avatar: newStaffData.avatar || `https://i.pravatar.cc/150?u=${newStaffData.email}`
-                };
-                const createdStaff = await dbService.create<StaffMember>('staff', staffPayload);
-                setStaff(prev => [...prev, createdStaff]);
-                setShowStaffForm(false);
-              } catch (error) {
-                console.error('Failed to create staff member:', error);
-                alert('Failed to create staff member');
-              }
-=======
-            onSubmit={(newStaff) => {
-              setStaff(prev => [...prev, newStaff]);
-              setShowStaffForm(false);
->>>>>>> gh-pages-local
-            }}
-          />
-        </Suspense>
-      )}
-
-      {showTaskForm && (
-        <Suspense fallback={<div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[70]"><div className="text-white">Loading...</div></div>}>
-          <TaskForm
-            rooms={rooms}
-            staff={staff}
-            tasks={tasks}
-            templates={templates}
-            onClose={() => setShowTaskForm(false)}
-<<<<<<< HEAD
-            onSubmit={async (newTaskData) => {
-              try {
-                const taskPayload = {
-                  ...newTaskData,
-                  companyId: currentCompanyId
-                };
-                const createdTask = await dbService.create<Task>('tasks', taskPayload);
-                setTasks(prev => [...prev, createdTask]);
-                setShowTaskForm(false);
-              } catch (error) {
-                console.error('Failed to create task:', error);
-                alert('Failed to create task');
-              }
-=======
-            onSubmit={(newTask) => {
-              setTasks(prev => [...prev, newTask]);
-              setShowTaskForm(false);
->>>>>>> gh-pages-local
-            }}
-          />
-        </Suspense>
-      )}
-<<<<<<< HEAD
-
-      {selectedRoom && (
-        <Suspense fallback={<div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[70]"><div className="text-white">Loading...</div></div>}>
-          <RoomDetailsModal
-            room={selectedRoom}
-            category={categories.find(c => c.id === selectedRoom.categoryId)}
-            bookings={bookings.filter(b => b.roomId === selectedRoom.id)}
-            feedback={feedback.filter(f => f.roomId === selectedRoom.id)}
-            onClose={() => setSelectedRoom(null)}
-          />
-        </Suspense>
-      )}
-=======
->>>>>>> gh-pages-local
-    </>
+    </Layout>
   );
 };
 

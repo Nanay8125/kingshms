@@ -135,14 +135,11 @@ const Settings: React.FC<SettingsProps> = ({ staff, onAddStaff, onDeleteStaff, c
                         <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
                           <Smartphone size={12} className="text-slate-400" /> {member.phone}
                         </div>
-<<<<<<< HEAD
-=======
                         {member.restCredentials && member.restCredentials.length > 0 && (
                           <div className="flex items-center gap-2 text-xs font-bold text-emerald-600">
                             <ShieldCheck size={12} className="text-emerald-400" /> {member.restCredentials.length} API keys
                           </div>
                         )}
->>>>>>> gh-pages-local
                       </div>
                     </td>
                     <td className="px-8 py-5 text-center">
