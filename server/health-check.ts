@@ -1,7 +1,10 @@
-import { testConnection } from './services/mysqlClient.js';
+import { testConnection } from '../services/mysqlClient.js';
+
+
 
 async function checkHealth() {
     console.log('🔍 Starting Cloud Deployment Health Check...');
+
 
     // 1. Check Database Connectivity
     console.log('\n--- Database Check ---');
