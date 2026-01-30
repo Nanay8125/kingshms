@@ -1,263 +1,119 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
-import { getPool, query, queryOne } from '../services/mysqlClient.js';
-import {
-    sanitizeId,
-    sanitizeObject,
-    isNoSQLInjection
-} from '../services/security.js';
+import { dbService } from '../services/mysqlDbService.js';
 import { v4 as uuidv4 } from 'uuid';
+
+// --- Environment Validation ---
+const REQUIRED_ENV = ['VITE_DB_HOST', 'VITE_DB_USER', 'VITE_DB_NAME'];
+const missingEnv = REQUIRED_ENV.filter(env => !process.env[env]);
+if (missingEnv.length > 0) {
+    console.error(`❌ Missing required environment variables: ${missingEnv.join(', ')}`);
+    process.exit(1);
+}
 
 const app = express();
 const port = 3001;
 
-// Middleware
+// --- Security Middleware ---
+app.use(helmet()); // Sets various HTTP headers for security
 app.use(cors());
 app.use(express.json());
 
-// Database Helpers (Duplicated from dbService for now, or imported if aligned)
-// Since this is the server, we can use the mysqlClient directly.
+// Rate Limiting: 100 requests per 15 minutes
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later.' }
+});
+app.use('/api/', limiter);
 
-type TableName =
-    | 'companies' | 'rooms' | 'bookings' | 'guests' | 'categories'
-    | 'tasks' | 'templates' | 'staff' | 'feedback' | 'emails'
-    | 'notifications' | 'conversations' | 'menu';
-
-const TABLE_MAP: Record<TableName, string> = {
-    companies: 'companies',
-    rooms: 'rooms',
-    bookings: 'bookings',
-    guests: 'guests',
-    categories: 'room_categories',
-    tasks: 'tasks',
-    templates: 'task_templates',
-    staff: 'staff_members',
-    feedback: 'feedback',
-    emails: 'staff_emails',
-    notifications: 'notifications',
-    conversations: 'conversations',
-    menu: 'menu_items'
-};
-
-// Helper to check company scope
-const isCompanyScoped = (table: TableName): boolean => {
-    const companyScopedTables: TableName[] = [
-        'rooms', 'guests', 'tasks', 'staff', 'menu'
-    ];
-    return companyScopedTables.includes(table);
-};
-
-// Conversion Helpers
-const convertToDB = (obj: any): any => {
-    if (obj === null || obj === undefined) return obj;
-    if (Array.isArray(obj)) return obj;
-    if (typeof obj !== 'object') return obj;
-
-    const converted: any = {};
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-            const value = obj[key];
-
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                converted[snakeKey] = JSON.stringify(value);
-            } else if (Array.isArray(value)) {
-                converted[snakeKey] = JSON.stringify(value);
-            } else {
-                converted[snakeKey] = value;
-            }
-        }
+// --- Error Handling Utility ---
+class APIError extends Error {
+    constructor(public message: string, public statusCode: number = 500) {
+        super(message);
     }
-    return converted;
-};
+}
 
-const convertFromDB = (rows: any[]): any[] => {
-    return rows.map(row => {
-        const converted: any = {};
-        for (const key in row) {
-            if (Object.prototype.hasOwnProperty.call(row, key)) {
-                const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-                const value = row[key];
-
-                if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
-                    try {
-                        converted[camelKey] = JSON.parse(value);
-                    } catch {
-                        converted[camelKey] = value;
-                    }
-                } else {
-                    converted[camelKey] = value;
-                }
-            }
-        }
-        return converted;
-    });
-};
-
-// --- API Endpoints ---
-
-// Helper for error handling
 const asyncHandler = (fn: any) => (req: express.Request, res: express.Response, next: express.NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
 
+// --- API Router (v1) ---
+const v1Router = express.Router();
+
 // GET All
-app.get('/api/:table', asyncHandler(async (req: express.Request, res: express.Response) => {
-    const table = req.params.table as TableName;
+v1Router.get('/:table', asyncHandler(async (req: express.Request, res: express.Response) => {
+    const table = req.params.table as any;
     const companyId = req.query.companyId as string;
 
-    if (!TABLE_MAP[table]) {
-        return res.status(400).json({ error: 'Invalid table name' });
-    }
-
-    const mysqlTable = TABLE_MAP[table];
-    let sql = `SELECT * FROM ${mysqlTable}`;
-    const params: any[] = [];
-
-    if (companyId && isCompanyScoped(table)) {
-        sql += ' WHERE company_id = ?';
-        params.push(companyId);
-    }
-
-    sql += ' ORDER BY created_at DESC';
-
-    const results = await query(sql, params);
-    res.json(convertFromDB(results));
+    const results = await dbService.getAll(table, companyId);
+    res.json(results);
 }));
 
 // GET By ID
-app.get('/api/:table/:id', asyncHandler(async (req: express.Request, res: express.Response) => {
-    const table = req.params.table as TableName;
+v1Router.get('/:table/:id', asyncHandler(async (req: express.Request, res: express.Response) => {
+    const table = req.params.table as any;
     const id = req.params.id;
     const companyId = req.query.companyId as string;
 
-    if (!TABLE_MAP[table]) {
-        return res.status(400).json({ error: 'Invalid table name' });
-    }
-
-    try {
-        sanitizeId(id as string);
-    } catch (error) {
-        return res.status(400).json({ error: 'Invalid ID format' });
-    }
-
-    const mysqlTable = TABLE_MAP[table];
-    let sql = `SELECT * FROM ${mysqlTable} WHERE id = ?`;
-    const params: any[] = [id];
-
-    if (companyId && isCompanyScoped(table)) {
-        sql += ' AND company_id = ?';
-        params.push(companyId);
-    }
-
-    const result = await queryOne(sql, params);
+    const result = await dbService.getById(table, id, companyId);
     if (!result) {
-        return res.status(404).json({ error: 'Item not found' });
+        throw new APIError('Item not found', 404);
     }
-    res.json(convertFromDB([result])[0]);
+    res.json(result);
 }));
 
 // CREATE
-app.post('/api/:table', asyncHandler(async (req: express.Request, res: express.Response) => {
-    const table = req.params.table as TableName;
+v1Router.post('/:table', asyncHandler(async (req: express.Request, res: express.Response) => {
+    const table = req.params.table as any;
     const item = req.body;
     const companyId = req.query.companyId as string;
 
-    if (!TABLE_MAP[table]) {
-        return res.status(400).json({ error: 'Invalid table name' });
-    }
-
-    let sanitized: any;
-    try {
-        sanitized = sanitizeObject(item);
-    } catch (error: any) {
-        return res.status(400).json({ error: error.message });
-    }
-
-    if (companyId && isCompanyScoped(table)) {
-        sanitized.companyId = companyId;
-    }
-
-    if (!sanitized.id) {
-        sanitized.id = uuidv4();
-    }
-
-    const dbData = convertToDB(sanitized);
-    const mysqlTable = TABLE_MAP[table];
-
-    const columns = Object.keys(dbData);
-    const placeholders = columns.map(() => '?').join(', ');
-    const values = Object.values(dbData);
-
-    const sql = `INSERT INTO ${mysqlTable} (${columns.join(', ')}) VALUES (${placeholders})`;
-
-    await query(sql, values);
-
-    // Fetch and return the clean object
-    const fetchSql = `SELECT * FROM ${mysqlTable} WHERE id = ?`;
-    const result = await queryOne(fetchSql, [sanitized.id]);
-    res.status(201).json(convertFromDB([result])[0]);
+    const result = await dbService.create(table, item, companyId);
+    res.status(201).json(result);
 }));
 
 // UPDATE
-app.put('/api/:table/:id', asyncHandler(async (req: express.Request, res: express.Response) => {
-    const table = req.params.table as TableName;
+v1Router.put('/:table/:id', asyncHandler(async (req: express.Request, res: express.Response) => {
+    const table = req.params.table as any;
     const id = req.params.id;
     const updates = req.body;
 
-    if (!TABLE_MAP[table]) {
-        return res.status(400).json({ error: 'Invalid table name' });
-    }
-
-    try {
-        sanitizeId(id as string);
-    } catch (error) {
-        return res.status(400).json({ error: 'Invalid ID format' });
-    }
-
-    const sanitized = sanitizeObject(updates);
-    const dbData = convertToDB(sanitized);
-    delete dbData.id; // Don't allow ID update
-
-    if (Object.keys(dbData).length === 0) {
-        return res.status(400).json({ error: 'No valid fields to update' });
-    }
-
-    const mysqlTable = TABLE_MAP[table];
-    const setClause = Object.keys(dbData).map(col => `${col} = ?`).join(', ');
-    const values = [...Object.values(dbData), id];
-
-    const sql = `UPDATE ${mysqlTable} SET ${setClause} WHERE id = ?`;
-    await query(sql, values);
-
-    const fetchSql = `SELECT * FROM ${mysqlTable} WHERE id = ?`;
-    const result = await queryOne(fetchSql, [id]);
-    res.json(convertFromDB([result])[0]);
+    const result = await dbService.update(table, id, updates);
+    res.json(result);
 }));
 
 // DELETE
-app.delete('/api/:table/:id', asyncHandler(async (req: express.Request, res: express.Response) => {
-    const table = req.params.table as TableName;
+v1Router.delete('/:table/:id', asyncHandler(async (req: express.Request, res: express.Response) => {
+    const table = req.params.table as any;
     const id = req.params.id;
 
-    if (!TABLE_MAP[table]) {
-        return res.status(400).json({ error: 'Invalid table name' });
-    }
-
-    try {
-        sanitizeId(id as string);
-    } catch (error) {
-        return res.status(400).json({ error: 'Invalid ID format' });
-    }
-
-    const mysqlTable = TABLE_MAP[table];
-    const sql = `DELETE FROM ${mysqlTable} WHERE id = ?`;
-    await query(sql, [id]);
-
+    await dbService.delete(table, id);
     res.json({ success: true });
 }));
+
+// Mount API Versions
+app.use('/api/v1', v1Router);
+// Maintain backward compatibility for now
+app.use('/api', v1Router);
+
+// --- Centralized Error Handling Middleware ---
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error(`[Error] ${err.message}`);
+    const statusCode = err instanceof APIError ? err.statusCode : 500;
+    const message = statusCode === 500 ? 'Internal Server Error' : err.message;
+    
+    res.status(statusCode).json({
+        error: message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
 
 // Start Server
 app.listen(port, () => {

@@ -100,6 +100,7 @@ const RoomGrid: React.FC<RoomGridProps> = ({ rooms, categories, bookings, onStat
           <input
             type="text"
             placeholder="Filter room numbers..."
+            aria-label="Filter room numbers"
             className="w-full pl-12 pr-12 py-3 bg-indigo-50/50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm font-medium transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -108,6 +109,7 @@ const RoomGrid: React.FC<RoomGridProps> = ({ rooms, categories, bookings, onStat
             <button
               onClick={() => setSearchQuery('')}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition-all"
+              aria-label="Clear search"
             >
               <X size={16} />
             </button>
@@ -117,8 +119,9 @@ const RoomGrid: React.FC<RoomGridProps> = ({ rooms, categories, bookings, onStat
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full xl:w-auto">
           <div className="flex items-center gap-2 bg-indigo-50/50 p-1 rounded-2xl border border-slate-200 w-full sm:w-auto">
             <div className="flex flex-col px-3 py-1">
-              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Arrival</label>
+              <label htmlFor="arrival-date" className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Arrival</label>
               <input
+                id="arrival-date"
                 type="date"
                 className="bg-transparent text-xs font-bold text-slate-700 focus:outline-none"
                 value={dates.checkIn}
@@ -127,8 +130,9 @@ const RoomGrid: React.FC<RoomGridProps> = ({ rooms, categories, bookings, onStat
             </div>
             <ArrowRight size={14} className="text-slate-300" />
             <div className="flex flex-col px-3 py-1">
-              <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Departure</label>
+              <label htmlFor="departure-date" className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Departure</label>
               <input
+                id="departure-date"
                 type="date"
                 min={dates.checkIn}
                 className="bg-transparent text-xs font-bold text-slate-700 focus:outline-none"
@@ -140,6 +144,7 @@ const RoomGrid: React.FC<RoomGridProps> = ({ rooms, categories, bookings, onStat
               <button
                 onClick={() => setDates({ checkIn: '', checkOut: '' })}
                 className="p-2 text-slate-400 hover:text-rose-500 transition-colors"
+                aria-label="Clear dates"
               >
                 <X size={16} />
               </button>
@@ -216,6 +221,7 @@ const RoomGrid: React.FC<RoomGridProps> = ({ rooms, categories, bookings, onStat
                   {!isRangeActive && (
                     <select
                       value={room.status}
+                      aria-label={`Change status for room ${room.number}`}
                       onChange={(e) => onStatusChange(room.id, e.target.value as RoomStatus)}
                       className="mt-2 text-[10px] w-full bg-indigo-50/50 border border-slate-200 rounded-xl p-2.5 font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all hover:bg-white cursor-pointer"
                     >

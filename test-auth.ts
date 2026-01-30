@@ -1,5 +1,6 @@
-import { validatePassword } from './services/authService';
-import { isNoSQLInjection } from './services/security';
+import { validatePassword } from './services/authService.js';
+import { isNoSQLInjection } from './services/security.js';
+
 
 const password = "SecurePass123!";
 console.log(`Testing password: "${password}"`);

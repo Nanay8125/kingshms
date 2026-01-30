@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RoomCategory } from '../types';
+import { Room, RoomCategory, RoomStatus } from '../types';
 import { X, Plus } from 'lucide-react';
 import { sanitizeString, validateNumber } from '../services/security';
 
@@ -7,13 +7,6 @@ interface RoomFormProps {
   categories: RoomCategory[];
   onClose: () => void;
   onSubmit: (room: Omit<Room, 'id'>) => void;
-}
-
-interface Room {
-  number: string;
-  floor: number;
-  categoryId: string;
-  status: string;
 }
 
 const RoomForm: React.FC<RoomFormProps> = ({ categories, onClose, onSubmit }) => {

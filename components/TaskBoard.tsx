@@ -74,6 +74,14 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
     }
   };
 
+  const getPriorityBorderColor = (priority: TaskPriority) => {
+    switch (priority) {
+      case TaskPriority.HIGH: return 'border-l-rose-500';
+      case TaskPriority.MEDIUM: return 'border-l-amber-500';
+      case TaskPriority.LOW: return 'border-l-emerald-500';
+    }
+  };
+
   const getStatusIcon = (status: StaffStatus) => {
     switch (status) {
       case StaffStatus.AVAILABLE: return '🟢';
@@ -219,6 +227,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
                 <select
                   className="pl-9 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none appearance-none cursor-pointer"
                   value={staffFilter}
+                  aria-label="Filter tasks by staff member"
                   onChange={(e) => setStaffFilter(e.target.value)}
                 >
                   <option value="all">All Staff</option>
@@ -281,8 +290,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
                       onDragEnd={handleDragEnd}
                       onDragOver={(e) => handleDragOverCard(e, task.id)}
                       onDrop={(e) => handleDrop(e, column.id, task.id)}
-                      className={`bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group border-l-4 relative overflow-hidden cursor-grab active:cursor-grabbing ${isDragTarget ? 'ring-2 ring-indigo-500 translate-y-1' : ''} ${isBeingDragged ? 'shadow-none' : ''}`}
-                      style={{ borderLeftColor: task.priority === TaskPriority.HIGH ? '#ef4444' : task.priority === TaskPriority.MEDIUM ? '#f59e0b' : '#10b981' }}
+                      className={`bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all group border-l-4 relative overflow-hidden cursor-grab active:cursor-grabbing ${getPriorityBorderColor(task.priority)} ${isDragTarget ? 'ring-2 ring-indigo-500 translate-y-1' : ''} ${isBeingDragged ? 'shadow-none' : ''}`}
                     >
                       {/* Drag Handle Overlay for touch and better UX */}
                       <div className="absolute left-0 top-0 bottom-0 w-2 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-slate-50/50">
@@ -305,6 +313,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
 
                         <select
                           value={task.priority}
+                          aria-label={`Change priority for task: ${task.title}`}
                           onChange={(e) => onUpdatePriority(task.id, e.target.value as TaskPriority)}
                           className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border cursor-pointer focus:outline-none appearance-none transition-colors ${getPriorityColor(task.priority)}`}
                         >
@@ -338,6 +347,7 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
                             <div className="relative group/staff">
                               <select
                                 value={task.assignedStaffId || ''}
+                                aria-label={`Assign staff member to task: ${task.title}`}
                                 onChange={(e) => onUpdateAssignedStaff(task.id, e.target.value)}
                                 className="text-[10px] font-bold text-slate-500 hover:text-indigo-600 bg-transparent focus:outline-none cursor-pointer border-none p-0 max-w-[100px] appearance-none"
                               >
@@ -387,12 +397,14 @@ const TaskBoard: React.FC<TaskBoardProps> = ({
                   <button
                     onClick={() => onEditTemplate(tpl)}
                     className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                    aria-label={`Edit template: ${tpl.name}`}
                   >
                     <Edit2 size={16} />
                   </button>
                   <button
                     onClick={() => onDeleteTemplate(tpl.id)}
                     className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                    aria-label={`Delete template: ${tpl.name}`}
                   >
                     <Trash2 size={16} />
                   </button>
