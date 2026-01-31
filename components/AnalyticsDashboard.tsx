@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar, Legend, LineChart, Line
 } from 'recharts';
 import { Room, Booking, RoomCategory, Guest, RoomStatus, Task, StaffMember, TaskStatus } from '../types';
@@ -20,12 +20,12 @@ const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings, categories, guests, tasks, staff }) => {
   const [ageFilter, setAgeFilter] = useState<string>('All');
-  
+
   const stats = useMemo(() => {
     const totalRevenue = bookings.reduce((sum, b) => sum + b.totalPrice, 0);
     const occupiedCount = rooms.filter(r => r.status === RoomStatus.OCCUPIED).length;
     const occupancyRate = (occupiedCount / rooms.length) * 100;
-    
+
     const adr = bookings.length > 0 ? totalRevenue / bookings.length : 0;
     const revPar = totalRevenue / (rooms.length || 1);
 
@@ -90,7 +90,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
         dailyTrend[date] = (dailyTrend[date] || 0) + 1;
       }
     });
-    
+
     const trend = Object.entries(dailyTrend).map(([date, count]) => ({ date, count })).slice(-7);
 
     return { deptStats, staffStats, trend };
@@ -107,8 +107,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
   ];
 
   const nationalityData = useMemo(() => {
-    const filteredGuests = ageFilter === 'All' 
-      ? guests 
+    const filteredGuests = ageFilter === 'All'
+      ? guests
       : guests.filter(g => g.ageGroup === ageFilter);
 
     const counts: { [key: string]: number } = {};
@@ -192,12 +192,12 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
               <BarChart data={taskPerformanceData.deptStats} layout="vertical" margin={{ left: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
                 <XAxis type="number" hide domain={[0, 100]} />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 11, fontWeight: 700}} />
-                <Tooltip 
-                   cursor={{fill: '#f8fafc'}}
-                   contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} 
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11, fontWeight: 700 }} />
+                <Tooltip
+                  cursor={{ fill: '#f8fafc' }}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                 />
-                <Bar dataKey="rate" fill="#6366f1" radius={[0, 8, 8, 0]} barSize={24} label={{ position: 'right', formatter: (v: number) => `${v}%`, fontSize: 10, fontWeight: 'bold', fill: '#6366f1' }} />
+                <Bar dataKey="rate" fill="#6366f1" radius={[0, 8, 8, 0]} barSize={24} label={{ position: 'right', formatter: (v: any) => `${v}%`, fontSize: 10, fontWeight: 'bold', fill: '#6366f1' }} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -213,7 +213,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
             {taskPerformanceData.staffStats.map((s, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-500 border border-slate-200">
-                  #{i+1}
+                  #{i + 1}
                 </div>
                 <div className="flex-1">
                   <div className="flex justify-between items-center mb-1">
@@ -221,7 +221,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
                     <span className="text-[10px] font-black text-emerald-600">{s.rate}%</span>
                   </div>
                   <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${s.rate}%` }} />
+                    {/* eslint-disable-next-line react/forbid-dom-props */}
+                    <div
+                      className="h-full bg-emerald-500 rounded-full progress-bar-fill"
+                      ref={(el) => {
+                        if (el) el.style.setProperty('--progress-width', `${s.rate}%`);
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -247,15 +253,15 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
               <AreaChart data={revenueTrend}>
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 600}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 600}} />
-                <Tooltip 
-                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'}} 
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 600 }} />
+                <Tooltip
+                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
                 />
                 <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
                 <Area type="monotone" dataKey="revPar" stroke="#10b981" strokeWidth={2} fill="transparent" />
@@ -305,9 +311,12 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
                   <span className="text-xs font-black text-indigo-600">{cat.rate.toFixed(1)}%</span>
                 </div>
                 <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-indigo-500 rounded-full transition-all duration-1000" 
-                    style={{ width: `${cat.rate}%` }} 
+                  {/* eslint-disable-next-line react/forbid-dom-props */}
+                  <div
+                    className="h-full bg-indigo-500 rounded-full transition-all duration-1000 progress-bar-fill"
+                    ref={(el) => {
+                      if (el) el.style.setProperty('--progress-width', `${cat.rate}%`);
+                    }}
                   />
                 </div>
                 <div className="flex justify-between text-[10px] text-slate-400 font-medium">
@@ -329,7 +338,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
               </h3>
               <p className="text-xs text-slate-400 font-medium">Geographic distribution of visitors</p>
             </div>
-            
+
             <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 p-1.5 rounded-xl">
               <Filter size={14} className="text-slate-400 ml-1.5" />
               <select
@@ -346,17 +355,17 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ rooms, bookings
               </select>
             </div>
           </div>
-          
+
           <div className="h-64 mt-6">
             {nationalityData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={nationalityData} layout="vertical" margin={{ left: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12, fontWeight: 700}} />
-                  <Tooltip 
-                     cursor={{fill: '#f8fafc'}}
-                     contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} 
+                  <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }} />
+                  <Tooltip
+                    cursor={{ fill: '#f8fafc' }}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                   />
                   <Bar dataKey="value" fill="#10b981" radius={[0, 8, 8, 0]} barSize={24} label={{ position: 'right', fontSize: 10, fontWeight: 'bold', fill: '#10b981' }} />
                 </BarChart>
