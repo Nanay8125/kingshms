@@ -29,7 +29,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: amondnet/vercel-action@v25
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-token: gOI0ailiMk69RirOwE7GRoPn
           vercel-org-id: team_JSFWu8DGnKfBoWgOQckSxJtW
           vercel-project-id: prj_hp2bUsv4kR1UACn3ttnj9XnJPajR
           vercel-args: "--prod --yes"
