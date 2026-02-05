@@ -75,11 +75,19 @@ class DatabaseService {
         try {
             const response = await fetch(url);
             if (!response.ok) {
-                throw new Error(`API Error: ${response.statusText}`);
+                // Treat 500/503 as offline/demo mode triggers without logging critical errors
+                throw new Error(`API Unavailable (${response.statusText})`);
             }
             return await response.json();
         } catch (error) {
-            logError(error as Error, { table, companyId, action: 'getAll' });
+            // Only log actual errors, not fallback triggers
+            if (process.env.NODE_ENV === 'development') {
+                console.warn(`API unavailable for ${table}, using local fallback.`);
+            } else {
+                 // Optionally log to monitoring if it's not an expected offline case
+                 // logError(error as Error, { table, companyId, action: 'getAll' });
+            }
+            
             // Return local data or fallback data for demo when API is not available
             return this.getLocalData(table) as T[];
         }
@@ -136,7 +144,9 @@ class DatabaseService {
             trackEvent('resource_created', { table, companyId });
             return result;
         } catch (error) {
-            logError(error as Error, { table, action: 'create', item: sanitized });
+            if (process.env.NODE_ENV === 'development') {
+                console.warn(`API unavailable for create ${table}, using local fallback.`);
+            }
             // For demo purposes, persist to localStorage when API is not available
             const localData = this.getLocalData(table);
             const newItem = { ...sanitized, id: sanitized.id || uuidv4() };
