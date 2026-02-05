@@ -18,3 +18,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/1IWyKiya8sBOnr94-59SCWW
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Testing
+
+**Playwright prerequisite:** If you plan to run end-to-end tests, install the browser binaries first:
+`npx playwright install chromium`

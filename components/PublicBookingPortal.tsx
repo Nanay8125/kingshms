@@ -2,11 +2,9 @@
 import React, { useState, useMemo } from 'react';
 import {
   Hotel,
-  Calendar,
   Users,
   ChevronRight,
   ArrowLeft,
-  Bed,
   Wifi,
   Tv,
   ShieldCheck,
@@ -17,8 +15,7 @@ import {
   UtensilsCrossed,
   ShoppingCart,
   Plus,
-  Minus,
-  ArrowRight
+  Minus
 } from 'lucide-react';
 import { Room, RoomCategory, Booking, Guest, RoomStatus, MenuItem, TaskPriority, TaskType } from '../types';
 // Removed INITIAL_MENU import
@@ -61,6 +58,7 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
 
     const requestedStart = new Date(dates.checkIn + 'T00:00:00');
     const requestedEnd = new Date(dates.checkOut + 'T00:00:00');
+    if (requestedEnd <= requestedStart) return 0;
 
     return rooms.filter(room => {
       if (room.categoryId !== catId || room.status === RoomStatus.MAINTENANCE) return false;
@@ -107,9 +105,13 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
       const item = menu.find(m => m.id === id);
       return sum + (item?.price || 0) * qty;
     }, 0);
-  }, [cart]);
+  }, [cart, menu]);
 
   const handleBook = async () => {
+    if (!selectedCategory) {
+      alert("Please select a room type to continue.");
+      return;
+    }
     setIsLoading(true);
     await new Promise(r => setTimeout(r, 2000));
 
@@ -140,6 +142,7 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
 
     const newBooking: Booking = {
       id: bookingId,
+      companyId: availableRooms[0].companyId,
       roomId: availableRooms[0].id,
       guestId: guestId,
       checkIn: dates.checkIn,
@@ -149,6 +152,25 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
       guestsCount: guestCount,
       source: 'Direct'
     };
+
+    try {
+      // Send confirmation email
+      await fetch('/api/v1/email/booking-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          booking: newBooking,
+          guest: newGuest,
+          room: availableRooms[0],
+          category: selectedCategory
+        })
+      });
+    } catch (emailError) {
+      console.error('Failed to send confirmation email:', emailError);
+      // Continue with booking even if email fails
+    }
 
     onBookingComplete(newBooking, newGuest);
     setStep('success');
@@ -171,6 +193,55 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
         quantity: qty
       };
     });
+
+    const selectedRoom = rooms.find(r => r.id === selectedRoomId);
+    const orderTotal = cartTotal;
+
+    try {
+      // Send confirmation email
+      await fetch('/api/v1/email/food-order-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order: {
+            items: items,
+            total: orderTotal,
+            roomId: selectedRoomId
+          },
+          guest: {
+            name: 'Valued Guest', // In a real app, this would come from guest data
+            email: 'guest@luxestay.com', // In a real app, this would come from guest data
+            phone: '+1234567890' // In a real app, this would come from guest data
+          },
+          room: selectedRoom
+        })
+      });
+
+      // Send confirmation SMS
+      await fetch('/api/v1/sms/food-order-confirmation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order: {
+            items: items,
+            total: orderTotal,
+            roomId: selectedRoomId
+          },
+          guest: {
+            name: 'Valued Guest', // In a real app, this would come from guest data
+            phone: '+1234567890' // In a real app, this would come from guest data
+          },
+          room: selectedRoom
+        })
+      });
+    } catch (notificationError) {
+      console.error('Failed to send food order notifications:', notificationError);
+      // Continue with order even if notifications fail
+    }
 
     onFoodRequest(selectedRoomId, items);
     setDiningStep('success');
@@ -297,7 +368,7 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
             <CheckCircle2 size={48} className="animate-in zoom-in duration-500" />
           </div>
           <h2 className="text-4xl font-black text-slate-900 mb-4">Chef is on it!</h2>
-          <p className="text-slate-500 font-medium mb-12">Your order has been sent to our signature kitchen. Average preparation time is 25-35 minutes.</p>
+          <p className="text-slate-500 font-medium mb-12">Your order has been sent to our signature kitchen. A confirmation email has been sent with your order details. Average preparation time is 25-35 minutes.</p>
           <button
             onClick={() => setDiningStep('menu')}
             className="w-full py-5 bg-slate-900 text-white rounded-[24px] font-black text-sm hover:bg-slate-800 transition-all"
@@ -362,6 +433,12 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
                 onClick={() => {
                   if (!dates.checkIn || !dates.checkOut) {
                     alert("Please select your stay dates.");
+                    return;
+                  }
+                  const start = new Date(dates.checkIn + 'T00:00:00');
+                  const end = new Date(dates.checkOut + 'T00:00:00');
+                  if (end <= start) {
+                    alert("Check-out must be after check-in.");
                     return;
                   }
                   setStep('rooms');
@@ -549,14 +626,14 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
                     <img src={selectedCategory?.imageUrl || `https://picsum.photos/seed/${selectedCategory?.id}/100/100`} alt={`${selectedCategory?.name} room`} className="w-16 h-16 rounded-2xl object-cover" />
                     <div>
                       <p className="font-bold text-slate-900">{selectedCategory?.name}</p>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{guestCount} Guests • {nights} Nights</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{guestCount} Guests &bull; {nights} Nights</p>
                     </div>
                   </div>
 
                   <div className="space-y-3 pt-6 border-t border-slate-50">
                     <div className="flex justify-between text-sm font-medium">
                       <span className="text-slate-500">Dates</span>
-                      <span className="text-slate-900">{dates.checkIn} → {dates.checkOut}</span>
+                      <span className="text-slate-900">{dates.checkIn} &rarr; {dates.checkOut}</span>
                     </div>
                     <div className="flex justify-between text-sm font-medium">
                       <span className="text-slate-500">Rate ({nights} nights)</span>
@@ -655,7 +732,7 @@ const PublicBookingPortal: React.FC<PublicBookingPortalProps> = ({ rooms, catego
             <div className="flex items-center gap-3 px-4 py-2 bg-indigo-600 text-white rounded-2xl text-xs font-black animate-in fade-in slide-in-from-right-2">
               <ShoppingCart size={16} />
               {/* Fixed: typed reduce parameters to number to avoid unknown type error */}
-              {Object.values(cart).reduce((a: number, b: number) => a + b, 0)} Items • ${cartTotal}
+              {Object.values(cart).reduce((a: number, b: number) => a + b, 0)} Items &bull; ${cartTotal}
             </div>
           )}
           <button

@@ -106,7 +106,9 @@ class DatabaseService {
             return await response.json();
         } catch (error) {
             console.error('Fetch error:', error);
-            return undefined;
+            // Fallback to local data
+            const localData = this.getLocalData(table);
+            return localData.find(item => item.id === id) as T | undefined;
         }
     }
 
@@ -207,7 +209,7 @@ class DatabaseService {
             id: uuidv4(),
             timestamp: new Date().toISOString(),
             ipAddress: 'detected-on-server', // In a real app, this would be from the request
-            userAgent: navigator.userAgent
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Server/Node.js'
         };
 
         try {

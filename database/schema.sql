@@ -125,12 +125,14 @@ CREATE TABLE guests (
 -- =====================================================
 CREATE TABLE bookings (
     id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    company_id VARCHAR(36) NOT NULL,
     room_id VARCHAR(36) NOT NULL,
     guest_id VARCHAR(36) NOT NULL,
     check_in DATE NOT NULL,
     check_out DATE NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
     status ENUM(
+        'queued',
         'confirmed',
         'checked-in',
         'checked-out',
@@ -142,8 +144,10 @@ CREATE TABLE bookings (
     internal_notes TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
     FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE RESTRICT,
     FOREIGN KEY (guest_id) REFERENCES guests(id) ON DELETE RESTRICT,
+    INDEX idx_company (company_id),
     INDEX idx_room (room_id),
     INDEX idx_guest (guest_id),
     INDEX idx_dates (check_in, check_out),
@@ -294,4 +298,22 @@ CREATE TABLE notifications (
     FOREIGN KEY (staff_id) REFERENCES staff_members(id) ON DELETE CASCADE,
     INDEX idx_staff (staff_id),
     INDEX idx_read (`read`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- =====================================================
+-- PAYMENTS TABLE
+-- =====================================================
+CREATE TABLE payments (
+    id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    booking_id VARCHAR(36) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'USD',
+    status ENUM('pending', 'completed', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
+    payment_method VARCHAR(50),
+    transaction_id VARCHAR(255),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+    INDEX idx_booking (booking_id),
+    INDEX idx_status (status)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;

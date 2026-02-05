@@ -1,0 +1,93 @@
+components/FollowUpModal.tsx(5,10): error TS2305: Module '"../services/geminiService"' has no exported member 'generateGuestFollowUpEmail'.
+components/GeminiAssistant.tsx(4,10): error TS2305: Module '"../services/geminiService"' has no exported member 'getHotelAssistantResponse'.
+components/RoomTypeForm.tsx(31,14): error TS2345: Argument of type '{ id: string; name: string; basePrice: number; capacity: number; amenities: string[]; }' is not assignable to parameter of type 'RoomCategory'.
+  Property 'companyId' is missing in type '{ id: string; name: string; basePrice: number; capacity: number; amenities: string[]; }' but required in type 'RoomCategory'.
+components/StaffForm.tsx(83,43): error TS2339: Property 'encryptRESTCredential' does not exist on type 'AuthService'.
+components/TaskForm.tsx(65,11): error TS2741: Property 'companyId' is missing in type '{ title: string; description: string; type: TaskType; priority: TaskPriority; roomId: string; assignedStaffId: string; id: string; status: TaskStatus.PENDING; createdAt: string; }' but required in type 'Task'.
+constants.tsx(234,3): error TS2741: Property 'companyId' is missing in type '{ id: string; roomId: string; guestId: string; checkIn: string; checkOut: string; totalPrice: number; status: "checked-in"; guestsCount: number; source: "Direct"; }' but required in type 'Booking'.
+constants.tsx(235,3): error TS2741: Property 'companyId' is missing in type '{ id: string; roomId: string; guestId: string; checkIn: string; checkOut: string; totalPrice: number; status: "checked-in"; guestsCount: number; source: "Booking.com"; }' but required in type 'Booking'.
+constants.tsx(236,3): error TS2741: Property 'companyId' is missing in type '{ id: string; roomId: string; guestId: string; checkIn: string; checkOut: string; totalPrice: number; status: "checked-out"; guestsCount: number; source: "Expedia"; }' but required in type 'Booking'.
+constants.tsx(237,3): error TS2741: Property 'companyId' is missing in type '{ id: string; roomId: string; guestId: string; checkIn: string; checkOut: string; totalPrice: number; status: "confirmed"; guestsCount: number; source: "Airbnb"; }' but required in type 'Booking'.
+constants.tsx(238,3): error TS2741: Property 'companyId' is missing in type '{ id: string; roomId: string; guestId: string; checkIn: string; checkOut: string; totalPrice: number; status: "confirmed"; guestsCount: number; source: "Direct"; }' but required in type 'Booking'.
+database/seed.ts(6,5): error TS2305: Module '"../constants"' has no exported member 'INITIAL_COMPANIES'.
+server/index.ts(65,51): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+server/index.ts(88,50): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+server/index.ts(97,35): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+server/index.ts(136,55): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/test/dbService.test.ts(4,1): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(5,10): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(6,13): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(8,12): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(9,15): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(13,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/dbService.test.ts(14,3): error TS2304: Cannot find name 'beforeEach'.
+src/test/dbService.test.ts(15,5): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(16,5): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(19,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/dbService.test.ts(21,5): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(25,5): error TS2304: Cannot find name 'expect'.
+src/test/dbService.test.ts(26,5): error TS2304: Cannot find name 'expect'.
+src/test/dbService.test.ts(29,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/dbService.test.ts(31,5): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(35,5): error TS2304: Cannot find name 'expect'.
+src/test/dbService.test.ts(36,7): error TS2304: Cannot find name 'expect'.
+src/test/dbService.test.ts(39,5): error TS2304: Cannot find name 'expect'.
+src/test/dbService.test.ts(42,3): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/dbService.test.ts(43,5): error TS2304: Cannot find name 'vi'.
+src/test/dbService.test.ts(45,5): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(9,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(10,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(11,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(12,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(15,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(16,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(19,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(20,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(24,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(25,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(32,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(33,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(34,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(38,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(39,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(40,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(41,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(45,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(46,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(47,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(50,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(51,7): error TS2304: Cannot find name 'expect'.
+src/test/security.test.ts(55,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(56,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/security.test.ts(57,7): error TS2304: Cannot find name 'expect'.
+src/test/sync.test.ts(4,1): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(5,10): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(6,13): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(8,12): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(9,15): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(13,1): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/sync.test.ts(14,3): error TS2304: Cannot find name 'beforeEach'.
+src/test/sync.test.ts(15,5): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(18,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/sync.test.ts(19,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/sync.test.ts(20,7): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(24,7): error TS2304: Cannot find name 'expect'.
+src/test/sync.test.ts(25,7): error TS2304: Cannot find name 'expect'.
+src/test/sync.test.ts(28,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/sync.test.ts(29,7): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(33,7): error TS2304: Cannot find name 'expect'.
+src/test/sync.test.ts(37,3): error TS2593: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/sync.test.ts(38,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/sync.test.ts(48,7): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(50,7): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(52,7): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(54,7): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(58,7): error TS2304: Cannot find name 'expect'.
+src/test/sync.test.ts(61,5): error TS2593: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha` and then add 'jest' or 'mocha' to the types field in your tsconfig.
+src/test/sync.test.ts(70,7): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(71,7): error TS2304: Cannot find name 'vi'.
+src/test/sync.test.ts(73,13): error TS2304: Cannot find name 'expect'.

@@ -152,6 +152,8 @@ class AuthService {
     });
     trackEvent('auth_success', { userId: user.id });
 
+    const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : 'Server/Node.js';
+    
     // Audit Log
     dbService.addAuditLog({
       userId: user.id,
@@ -159,7 +161,7 @@ class AuthService {
       companyId: user.companyId,
       action: AuditAction.LOGIN,
       resource: 'auth',
-      details: `User logged in from ${navigator.userAgent}`
+      details: `User logged in from ${userAgent}`
     });
 
     return { success: true, user };
@@ -282,6 +284,142 @@ class AuthService {
   validatePassword(password: string) { return validatePassword(password); }
   sanitizeInput(input: string) { return sanitizeInput(input); }
   hasPermission(userRole: UserRole, requiredRole: UserRole) { return hasPermission(userRole, requiredRole); }
+
+  async encryptRESTCredential(credential: Partial<RESTCredential>): Promise<Partial<RESTCredential>> {
+    const encrypted: Partial<RESTCredential> = { ...credential };
+    if (credential.apiKey) {
+      encrypted.apiKey = await this.encryptData(credential.apiKey);
+    }
+    if (credential.secretKey) {
+      encrypted.secretKey = await this.encryptData(credential.secretKey);
+    }
+    encrypted.encrypted = true;
+    return encrypted;
+  }
+
+  // Password reset functionality
+  async requestPasswordReset(email: string, staffMembers: StaffMember[]): Promise<{ success: boolean; error?: string }> {
+    if (!validateEmail(email)) {
+      return { success: false, error: 'Invalid email format' };
+    }
+
+    const user = staffMembers.find(s => s.email === email);
+    if (!user) {
+      // Don't reveal if email exists for security
+      return { success: true }; // Pretend success to avoid email enumeration
+    }
+
+    // Generate a temporary reset token (in production, this would be stored securely)
+    const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const resetExpiry = Date.now() + (15 * 60 * 1000); // 15 minutes
+
+    // Store reset token temporarily (in production, use database)
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(`reset_${email}`, JSON.stringify({ token: resetToken, expiry: resetExpiry }));
+    }
+
+    // In production, send email with reset link
+    console.log(`Password reset requested for ${email}. Reset token: ${resetToken}`);
+
+    // Audit Log
+    dbService.addAuditLog({
+      userId: user.id,
+      userName: user.name,
+      companyId: user.companyId,
+      action: AuditAction.PASSWORD_RESET,
+      resource: 'auth',
+      details: 'Password reset requested'
+    });
+
+    return { success: true };
+  }
+
+  async resetPassword(email: string, resetToken: string, newPassword: string, staffMembers: StaffMember[]): Promise<{ success: boolean; error?: string }> {
+    if (!validateEmail(email)) {
+      return { success: false, error: 'Invalid email format' };
+    }
+
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.isValid) {
+      return { success: false, error: passwordValidation.errors.join(', ') };
+    }
+
+    // Verify reset token
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const storedReset = localStorage.getItem(`reset_${email}`);
+      if (!storedReset) {
+        return { success: false, error: 'Invalid or expired reset token' };
+      }
+
+      try {
+        const { token, expiry } = JSON.parse(storedReset);
+        if (token !== resetToken || Date.now() > expiry) {
+          return { success: false, error: 'Invalid or expired reset token' };
+        }
+      } catch {
+        return { success: false, error: 'Invalid reset token format' };
+      }
+    }
+
+    const userIndex = staffMembers.findIndex(s => s.email === email);
+    if (userIndex === -1) {
+      return { success: false, error: 'User not found' };
+    }
+
+    // Hash new password
+    const hashedPassword = await hashPassword(newPassword);
+    staffMembers[userIndex].password = hashedPassword;
+
+    // Clear reset token
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem(`reset_${email}`);
+    }
+
+    // Audit Log
+    dbService.addAuditLog({
+      userId: staffMembers[userIndex].id,
+      userName: staffMembers[userIndex].name,
+      companyId: staffMembers[userIndex].companyId,
+      action: AuditAction.PASSWORD_RESET,
+      resource: 'auth',
+      details: 'Password reset completed'
+    });
+
+    return { success: true };
+  }
+
+  async adminResetPassword(adminUser: StaffMember, targetUserId: string, newPassword: string, staffMembers: StaffMember[]): Promise<{ success: boolean; error?: string }> {
+    // Check if admin has permission
+    if (!hasPermission(adminUser.permissionRole, UserRole.ADMIN)) {
+      return { success: false, error: 'Insufficient permissions' };
+    }
+
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.isValid) {
+      return { success: false, error: passwordValidation.errors.join(', ') };
+    }
+
+    const userIndex = staffMembers.findIndex(s => s.id === targetUserId);
+    if (userIndex === -1) {
+      return { success: false, error: 'User not found' };
+    }
+
+    // Hash new password
+    const hashedPassword = await hashPassword(newPassword);
+    staffMembers[userIndex].password = hashedPassword;
+
+    // Audit Log
+    dbService.addAuditLog({
+      userId: adminUser.id,
+      userName: adminUser.name,
+      companyId: adminUser.companyId,
+      action: AuditAction.PASSWORD_RESET,
+      resource: 'auth',
+      details: `Admin reset password for user ${staffMembers[userIndex].name} (${staffMembers[userIndex].email})`
+    });
+
+    return { success: true };
+  }
 
   // CSRF protection methods
   getCSRFToken(): string { return this.csrfToken; }

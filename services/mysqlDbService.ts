@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 type TableName =
     | 'companies' | 'rooms' | 'bookings' | 'guests' | 'categories'
     | 'tasks' | 'templates' | 'staff' | 'feedback' | 'emails'
-    | 'notifications' | 'conversations' | 'menu';
+    | 'notifications' | 'conversations' | 'menu' | 'payments';
 
 const TABLE_MAP: Record<TableName, string> = {
     companies: 'companies',
@@ -25,7 +25,8 @@ const TABLE_MAP: Record<TableName, string> = {
     emails: 'staff_emails',
     notifications: 'notifications',
     conversations: 'conversations',
-    menu: 'menu_items'
+    menu: 'menu_items',
+    payments: 'payments'
 };
 
 // MySQL database service
@@ -176,7 +177,8 @@ class DatabaseService {
         const converted: any = {};
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
-                const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+                let snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+                if (snakeKey === 'password') snakeKey = 'password_hash';
                 const value = obj[key];
 
                 // Convert JSON fields
@@ -198,7 +200,8 @@ class DatabaseService {
             const converted: any = {};
             for (const key in row) {
                 if (row.hasOwnProperty(key)) {
-                    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+                    let camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+                    if (camelKey === 'passwordHash') camelKey = 'password';
                     const value = row[key];
 
                     // Parse JSON fields
@@ -229,6 +232,67 @@ class DatabaseService {
         for (const item of items) {
             await this.create(table, item, companyId);
         }
+    }
+
+    // --- Queued Data Processing ---
+
+    /**
+     * Detect conflicts (double bookings)
+     */
+    async checkConflict(roomId: string, checkIn: string, checkOut: string, excludeBookingId?: string): Promise<boolean> {
+        let sql = `
+            SELECT COUNT(*) as count 
+            FROM bookings 
+            WHERE room_id = ? 
+            AND status IN ('confirmed', 'checked-in', 'queued')
+            AND (
+                (check_in < ? AND check_out > ?) OR
+                (check_in < ? AND check_out > ?) OR
+                (check_in >= ? AND check_out <= ?)
+            )
+        `;
+
+        const params: any[] = [roomId, checkOut, checkIn, checkOut, checkIn, checkIn, checkOut];
+
+        if (excludeBookingId) {
+            sql += ' AND id != ?';
+            params.push(excludeBookingId);
+        }
+
+        const result = await queryOne<any>(sql, params);
+        return result.count > 0;
+    }
+
+    /**
+     * Mark synced data as confirmed
+     */
+    async confirmBooking(bookingId: string): Promise<any> {
+        const booking = await this.getById<any>('bookings', bookingId);
+        if (!booking) {
+            throw new Error('Booking not found');
+        }
+
+        if (booking.status === 'confirmed') {
+            return booking;
+        }
+
+        // Final conflict check before confirming
+        const hasConflict = await this.checkConflict(booking.roomId, booking.checkIn, booking.checkOut, bookingId);
+        if (hasConflict) {
+            throw new Error('Double booking detected. Cannot confirm.');
+        }
+
+        return await this.update('bookings', bookingId, { status: 'confirmed' });
+    }
+
+    async processQueuedPayment(paymentData: any): Promise<any> {
+        // Ensure booking exists
+        const booking = await this.getById<any>('bookings', paymentData.bookingId);
+        if (!booking) {
+            throw new Error('Associated booking not found');
+        }
+
+        return await this.create('payments', paymentData);
     }
 }
 

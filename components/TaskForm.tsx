@@ -11,9 +11,10 @@ interface TaskFormProps {
   initialTemplate?: TaskTemplate;
   onClose: () => void;
   onSubmit: (task: Task) => void;
+  companyId: string;
 }
 
-const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, initialTemplate, onClose, onSubmit }) => {
+const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, initialTemplate, onClose, onSubmit, companyId }) => {
   const [formData, setFormData] = useState({
     title: initialTemplate?.title || '',
     description: initialTemplate?.description || '',
@@ -64,6 +65,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, ini
     e.preventDefault();
     const newTask: Task = {
       id: `task-${Math.random().toString(36).substr(2, 9)}`,
+      companyId: companyId,
       status: TaskStatus.PENDING,
       createdAt: new Date().toISOString(),
       ...formData
@@ -79,17 +81,18 @@ const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, ini
             <ClipboardList size={20} />
             Assign New Task
           </h2>
-          <button onClick={onClose} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
+          <button onClick={onClose} aria-label="Close" className="p-1 hover:bg-white/10 rounded-lg transition-colors">
             <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+            <label htmlFor="templateSelect" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
               <Copy size={14} /> Quick Template
             </label>
             <select
+              id="templateSelect"
               className="w-full px-4 py-2.5 bg-indigo-50 border border-indigo-100 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:outline-none text-sm font-bold text-indigo-700 appearance-none cursor-pointer"
               onChange={e => handleApplyTemplate(e.target.value)}
               defaultValue=""
@@ -102,8 +105,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, ini
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Task Title</label>
+            <label htmlFor="taskTitle" className="text-xs font-bold text-slate-500 uppercase tracking-wider">Task Title</label>
             <input
+              id="taskTitle"
               required
               type="text"
               placeholder="e.g. Broken window repair"
@@ -114,8 +118,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, ini
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Description</label>
+            <label htmlFor="taskDescription" className="text-xs font-bold text-slate-500 uppercase tracking-wider">Description</label>
             <textarea
+              id="taskDescription"
               required
               rows={3}
               placeholder="Provide detailed instructions..."
@@ -127,8 +132,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, ini
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Type</label>
+              <label htmlFor="taskType" className="text-xs font-bold text-slate-500 uppercase tracking-wider">Type</label>
               <select
+                id="taskType"
                 className="w-full px-4 py-2.5 bg-indigo-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:outline-none text-sm font-medium appearance-none"
                 value={formData.type}
                 onChange={e => setFormData({ ...formData, type: e.target.value as TaskType })}
@@ -137,8 +143,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, ini
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Priority</label>
+              <label htmlFor="taskPriority" className="text-xs font-bold text-slate-500 uppercase tracking-wider">Priority</label>
               <select
+                id="taskPriority"
                 className="w-full px-4 py-2.5 bg-indigo-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:outline-none text-sm font-medium appearance-none"
                 value={formData.priority}
                 onChange={e => setFormData({ ...formData, priority: e.target.value as TaskPriority })}
@@ -150,10 +157,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, ini
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+              <label htmlFor="taskRoom" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                 <LayoutGrid size={14} /> Room Link
               </label>
               <select
+                id="taskRoom"
                 className="w-full px-4 py-2.5 bg-indigo-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:outline-none text-sm font-medium appearance-none"
                 value={formData.roomId}
                 onChange={e => setFormData({ ...formData, roomId: e.target.value })}
@@ -163,10 +171,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ rooms, staff, tasks, templates, ini
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+              <label htmlFor="taskStaff" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                 <User size={14} /> Assign Member
               </label>
               <select
+                id="taskStaff"
                 required
                 className="w-full px-4 py-2.5 bg-indigo-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:outline-none text-sm font-medium appearance-none"
                 value={formData.assignedStaffId}

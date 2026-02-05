@@ -30,6 +30,7 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ onClose, onSubmit }) => {
     e.preventDefault();
     onSubmit({
       id: `cat-${Math.random().toString(36).substr(2, 9)}`,
+      companyId: 'luxestay',
       name,
       basePrice,
       capacity,
@@ -45,15 +46,16 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ onClose, onSubmit }) => {
             <Layout size={20} />
             Define New Room Type
           </h2>
-          <button onClick={onClose} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
+          <button onClick={onClose} aria-label="Close" className="p-1 hover:bg-white/10 rounded-lg transition-colors">
             <X size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Type Name</label>
+            <label htmlFor="typeName" className="text-xs font-bold text-slate-500 uppercase tracking-wider">Type Name</label>
             <input
+              id="typeName"
               required
               type="text"
               placeholder="e.g. Deluxe Garden View"
@@ -65,10 +67,11 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ onClose, onSubmit }) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+              <label htmlFor="basePrice" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                 <CreditCard size={14} /> Base Price
               </label>
               <input
+                id="basePrice"
                 required
                 type="number"
                 min="0"
@@ -78,10 +81,11 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ onClose, onSubmit }) => {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+              <label htmlFor="capacity" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                 <Users size={14} /> Max Capacity
               </label>
               <input
+                id="capacity"
                 required
                 type="number"
                 min="1"
@@ -117,7 +121,7 @@ const RoomTypeForm: React.FC<RoomTypeFormProps> = ({ onClose, onSubmit }) => {
               {amenities.map((item, idx) => (
                 <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold">
                   {item}
-                  <button type="button" onClick={() => removeAmenity(idx)} className="hover:text-emerald-900">
+                  <button type="button" onClick={() => removeAmenity(idx)} aria-label={`Remove ${item}`} className="hover:text-emerald-900">
                     <X size={12} />
                   </button>
                 </span>

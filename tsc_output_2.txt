@@ -1,0 +1,2 @@
+components/StaffForm.tsx(84,7): error TS2322: Type 'Partial<RESTCredential>' is not assignable to type 'RESTCredential'.
+  Property 'id' is optional in type 'Partial<RESTCredential>' but required in type 'RESTCredential'.

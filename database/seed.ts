@@ -25,7 +25,7 @@ async function seed() {
         // First, create the database if it doesn't exist
         console.log('🔧 Creating database if not exists...');
         connection = await mysql.createConnection({
-            host: 'localhost',
+            host: '127.0.0.1',
             port: 3306,
             user: 'root',
             password: ''
@@ -37,7 +37,7 @@ async function seed() {
 
         // Now connect to the database
         connection = await mysql.createConnection({
-            host: 'localhost',
+            host: '127.0.0.1',
             port: 3306,
             user: 'root',
             password: '',
@@ -62,16 +62,21 @@ async function seed() {
         await connection.execute('SET FOREIGN_KEY_CHECKS = 1');
         console.log('✅ Cleared existing data\n');
 
+        const formatDate = (dateStr: string) => dateStr ? dateStr.replace('T', ' ').replace('Z', '') : null;
+
+        // ... inside seed() ...
         // Seed companies
         console.log('📦 Seeding companies...');
         for (const company of INITIAL_COMPANIES) {
             await connection.execute(
                 `INSERT INTO companies (id, name, subdomain, logo, primary_color, secondary_color, address, phone, email, website, timezone, currency, status, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                [company.id, company.name, company.subdomain, company.logo, company.primaryColor, company.secondaryColor,
-                company.address, company.phone, company.email, company.website, company.timezone, company.currency, company.status, company.createdAt]
+                [company.id, company.name, company.subdomain, company.logo || null, company.primaryColor, company.secondaryColor,
+                company.address, company.phone, company.email, company.website, company.timezone, company.currency, company.status, formatDate(company.createdAt)]
             );
         }
+        // ...
+
         console.log(`✅ Seeded ${INITIAL_COMPANIES.length} companies\n`);
 
         // Seed room categories
@@ -138,7 +143,7 @@ async function seed() {
                 `INSERT INTO tasks (id, company_id, title, description, type, priority, status, room_id, assigned_staff_id, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [task.id, task.companyId, task.title, task.description, task.type, task.priority,
-                task.status, task.roomId, task.assignedStaffId, task.createdAt]
+                task.status, task.roomId, task.assignedStaffId, formatDate(task.createdAt)]
             );
         }
         console.log(`✅ Seeded ${INITIAL_TASKS.length} tasks\n`);
@@ -171,7 +176,7 @@ async function seed() {
             await connection.execute(
                 `INSERT INTO feedback (id, booking_id, guest_id, room_id, rating, comment, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                [feedback.id, feedback.bookingId, feedback.guestId, feedback.roomId, feedback.rating, feedback.comment, feedback.createdAt]
+                [feedback.id, feedback.bookingId, feedback.guestId, feedback.roomId, feedback.rating, feedback.comment, formatDate(feedback.createdAt)]
             );
         }
         console.log(`✅ Seeded ${INITIAL_FEEDBACK.length} feedback entries\n`);
@@ -183,7 +188,7 @@ async function seed() {
                 `INSERT INTO conversations (id, guest_id, guest_name, room_number, last_message, last_timestamp, unread_count, messages)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                 [conversation.id, conversation.guestId, conversation.guestName, conversation.roomNumber,
-                conversation.lastMessage, conversation.lastTimestamp, conversation.unreadCount, JSON.stringify(conversation.messages)]
+                conversation.lastMessage, formatDate(conversation.lastTimestamp), conversation.unreadCount, JSON.stringify(conversation.messages)]
             );
         }
         console.log(`✅ Seeded ${INITIAL_CONVERSATIONS.length} conversations\n`);
@@ -205,6 +210,8 @@ async function seed() {
 
     } catch (error) {
         console.error('❌ Seed failed:', error);
+        const fs = await import('fs');
+        fs.writeFileSync('seed-error.log', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
         process.exit(1);
     } finally {
         if (connection) {

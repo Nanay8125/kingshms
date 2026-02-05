@@ -351,29 +351,7 @@ const CategoryManagement: React.FC<CategoryManagementProps> = ({ categories, onU
                 </div>
 
                 <div>
-                  <label className="text-sm font-bold text-slate-700 mb-2 block">Main Image URL</label>
-                  <input
-                    type="url"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 font-medium"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-bold text-slate-700 mb-2 block">Gallery Image URLs (comma separated)</label>
-                  <textarea
-                    value={formData.gallery}
-                    onChange={(e) => setFormData({ ...formData, gallery: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 font-medium resize-none"
-                    rows={2}
-                    placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-bold text-slate-700 mb-2 block">Main Image Upload</label>
+                  <label className="text-sm font-bold text-slate-700 mb-2 block">Main Image (Upload)</label>
                   <input
                     type="file"
                     accept="image/*"
@@ -396,7 +374,7 @@ const CategoryManagement: React.FC<CategoryManagementProps> = ({ categories, onU
                 </div>
 
                 <div>
-                  <label className="text-sm font-bold text-slate-700 mb-2 block">Gallery Upload (multiple)</label>
+                  <label className="text-sm font-bold text-slate-700 mb-2 block">Gallery (Upload Multiple)</label>
                   <input
                     type="file"
                     accept="image/*"
@@ -404,10 +382,28 @@ const CategoryManagement: React.FC<CategoryManagementProps> = ({ categories, onU
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
                       setGalleryFiles(files);
+                      setGalleryPreviews(files.map(f => URL.createObjectURL(f)));
                     }}
                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 font-medium"
                   />
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">You can still provide URLs; uploaded images take priority.</p>
+                  {(galleryPreviews.length > 0 || formData.gallery) && (
+                    <div className="mt-3 grid grid-cols-4 gap-2">
+                      {/* Show existing gallery images if no new uploads, or show new uploads */}
+                      {galleryPreviews.length > 0 ? (
+                        galleryPreviews.map((preview, i) => (
+                          <div key={i} className="aspect-square rounded-lg overflow-hidden border border-slate-200">
+                            <img src={preview} alt={`Gallery ${i}`} className="w-full h-full object-cover" />
+                          </div>
+                        ))
+                      ) : (
+                        formData.gallery && formData.gallery.split(',').filter(Boolean).map((url, i) => (
+                          <div key={i} className="aspect-square rounded-lg overflow-hidden border border-slate-200">
+                            <img src={url.trim()} alt={`Existing ${i}`} className="w-full h-full object-cover" />
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4">

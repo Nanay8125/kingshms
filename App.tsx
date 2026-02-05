@@ -66,8 +66,32 @@ const App: React.FC = () => {
   useEffect(() => {
     // Only access window after component mounts
     if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      setIsPublicBooking(urlParams.get('booking') === 'public');
+      const getQueryParam = (key: string): string | null => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const searchValue = searchParams.get(key);
+        if (searchValue) {
+          const normalized = searchValue.trim().toLowerCase();
+          if (normalized.length > 0) return normalized;
+        }
+
+        if (!window.location.hash) return null;
+        const hash = window.location.hash.startsWith('#')
+          ? window.location.hash.slice(1)
+          : window.location.hash;
+        const queryIndex = hash.indexOf('?');
+        if (queryIndex === -1) return null;
+
+        const hashQuery = hash.slice(queryIndex + 1);
+        const hashParams = new URLSearchParams(hashQuery);
+        const hashValue = hashParams.get(key);
+        if (!hashValue) return null;
+        const normalized = hashValue.trim().toLowerCase();
+        return normalized.length > 0 ? normalized : null;
+      };
+
+      const bookingParam = getQueryParam('booking');
+      const publicAliases = new Set(['public', 'guest', 'portal', 'booking']);
+      setIsPublicBooking(bookingParam ? publicAliases.has(bookingParam) : false);
     }
   }, []);
 
@@ -390,8 +414,6 @@ const App: React.FC = () => {
                 const newKey = {
                   id: `ak${Math.random().toString(36).substr(2, 5)}`,
                   key,
-                  createdAt: new Date().toISOString(),
-                  description: description || 'Generated Access Key',
                   active: true
                 };
 
@@ -423,7 +445,7 @@ const App: React.FC = () => {
                 console.error('Failed to revoke access key:', error);
               }
             }}
-            currentUser={currentUser}
+            currentUser={currentUser!}
           />
         );
       case 'categories':
@@ -520,7 +542,7 @@ const App: React.FC = () => {
             onDeleteStaff={(id) => {
               setStaff(prev => prev.filter(s => s.id !== id));
             }}
-            currentUser={currentUser}
+            currentUser={currentUser!}
           />
         );
       default:
@@ -570,7 +592,7 @@ const App: React.FC = () => {
       inAppNotifications={notifications}
       onMarkNotifRead={handleMarkNotificationRead}
       staff={staff}
-      currentUser={currentUser}
+      currentUser={currentUser!}
       onLogout={handleLogout}
       language={language}
       onLanguageChange={setLanguage}
@@ -578,6 +600,46 @@ const App: React.FC = () => {
       <Suspense fallback={<div className="flex items-center justify-center h-full text-white">Loading...</div>}>
         {renderContent()}
       </Suspense>
+
+      {showStaffForm && (
+        <Suspense fallback={null}>
+          <StaffForm
+            companyId={currentCompanyId}
+            onClose={() => setShowStaffForm(false)}
+            onSubmit={async (newStaff) => {
+              try {
+                const createdStaff = await dbService.create<StaffMember>('staff', newStaff);
+                setStaff(prev => [...prev, createdStaff]);
+                setShowStaffForm(false);
+              } catch (error) {
+                console.error('Failed to create staff member:', error);
+              }
+            }}
+          />
+        </Suspense>
+      )}
+
+      {showTaskForm && (
+        <Suspense fallback={null}>
+          <TaskForm
+            companyId={currentCompanyId}
+            rooms={rooms}
+            staff={staff}
+            tasks={tasks}
+            templates={templates}
+            onClose={() => setShowTaskForm(false)}
+            onSubmit={async (newTask) => {
+              try {
+                const createdTask = await dbService.create<Task>('tasks', newTask);
+                setTasks(prev => [...prev, createdTask]);
+                setShowTaskForm(false);
+              } catch (error) {
+                console.error('Failed to create task:', error);
+              }
+            }}
+          />
+        </Suspense>
+      )}
     </Layout>
   );
 };

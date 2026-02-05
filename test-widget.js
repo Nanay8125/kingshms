@@ -382,7 +382,7 @@
         isDragging = false;
     };
 
-    console.log('✅ Test widget loaded! ' ');
+    console.log('✅ Test widget loaded!');
   console.log('💡 Click the widget or use: window.runComponentTests()');
 
     // Export function

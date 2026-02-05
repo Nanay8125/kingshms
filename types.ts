@@ -230,16 +230,28 @@ export type BookingSource = 'Direct' | 'Booking.com' | 'Expedia' | 'Airbnb' | 'C
 
 export interface Booking {
   id: string;
+  companyId: string;
   roomId: string;
   guestId: string;
   checkIn: string;
   checkOut: string;
   totalPrice: number;
-  status: 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled';
+  status: 'queued' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled';
   guestsCount: number;
   source: BookingSource;
   specialRequests?: string;
   internalNotes?: string;
+}
+
+export interface Payment {
+  id: string;
+  bookingId: string;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  paymentMethod?: string;
+  transactionId?: string;
+  createdAt: string;
 }
 
 
@@ -256,7 +268,8 @@ export enum AuditAction {
   DELETE = 'DELETE',
   LOGIN = 'LOGIN',
   LOGOUT = 'LOGOUT',
-  ACCESS = 'ACCESS'
+  ACCESS = 'ACCESS',
+  PASSWORD_RESET = 'PASSWORD_RESET'
 }
 
 export interface AuditLog {

@@ -10,11 +10,19 @@ export default defineConfig(({ mode }) => {
         globals: true,
         environment: 'jsdom',
         setupFiles: ['./src/test/setup.ts'],
+        exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**', '**/cypress/**', '**/.{idea,git,cache,output,temp}/**'],
       },
       base: '/', // Deployed to root domain on Netlify
       server: {
         port: 3000,
         host: '0.0.0.0',
+        strictPort: false, // Allow port fallback if 3000 is in use
+        proxy: {
+          '/api': {
+            target: 'http://localhost:3001',
+            changeOrigin: true,
+          },
+        },
       },
       plugins: [react()],
       define: {
@@ -32,6 +40,18 @@ export default defineConfig(({ mode }) => {
           output: {
             manualChunks(id) {
               if (id.includes('node_modules')) {
+                if (id.includes('firebase')) {
+                  return 'firebase-vendor';
+                }
+                if (id.includes('lucide-react')) {
+                  return 'lucide-vendor';
+                }
+                if (id.includes('recharts')) {
+                  return 'recharts-vendor';
+                }
+                if (id.includes('/node_modules/react/') || id.includes('/node_modules/react-dom/') || id.includes('/node_modules/scheduler/')) {
+                  return 'react-vendor';
+                }
                 return 'vendor';
               }
               if (id.includes('/components/')) {

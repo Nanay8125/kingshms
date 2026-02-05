@@ -1,1 +1,9 @@
 /* Global styles for KingsHMS */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0f172a;
+}
+
+.progress-bar-fill {
+  width: var(--progress-width, 0%);
+}

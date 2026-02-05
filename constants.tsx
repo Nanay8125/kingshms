@@ -1,5 +1,23 @@
 
-import { Room, RoomStatus, Guest, Booking, RoomCategory, Task, TaskStatus, TaskPriority, TaskType, Feedback, StaffMember, StaffStatus, TaskTemplate, UserRole, MenuItem, Conversation, Language } from './types';
+import { Room, RoomStatus, Guest, Booking, RoomCategory, Task, TaskStatus, TaskPriority, TaskType, Feedback, StaffMember, StaffStatus, TaskTemplate, UserRole, MenuItem, Conversation, Language, Company } from './types';
+
+export const INITIAL_COMPANIES: Company[] = [
+  {
+    id: 'stayos',
+    name: 'StayOS Hotels & Resorts',
+    subdomain: 'stayos',
+    primaryColor: '#4f46e5',
+    secondaryColor: '#10b981',
+    address: '123 Luxury Ave, Beverly Hills, CA 90210',
+    phone: '+1 (555) 123-4567',
+    email: 'contact@stayos.com',
+    website: 'https://stayos.com',
+    timezone: 'America/Los_Angeles',
+    currency: 'USD',
+    createdAt: '2026-01-01T00:00:00Z',
+    status: 'active'
+  }
+];
 
 export const TRANSLATIONS: Record<Language, any> = {
   en: {
@@ -78,20 +96,20 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
     lastTimestamp: '2024-05-21T14:30:00Z',
     unreadCount: 0,
     messages: [
-      { id: 'm4', sender: 'staff', text: 'Welcome to LuxeStay, Jane!', timestamp: '2024-05-21T14:00:00Z' },
+      { id: 'm4', sender: 'staff', text: 'Welcome to StayOS, Jane!', timestamp: '2024-05-21T14:00:00Z' },
       { id: 'm5', sender: 'guest', text: 'Thank you for the wine!', timestamp: '2024-05-21T14:30:00Z' },
     ]
   }
 ];
 
 export const INITIAL_MENU: MenuItem[] = [
-  { id: 'm1', companyId: 'luxestay', name: 'Classic Eggs Benedict', description: 'Two poached eggs, Canadian bacon, hollandaise sauce on toasted English muffins.', price: 18, category: 'Breakfast', image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm2', companyId: 'luxestay', name: 'Wagyu Beef Burger', description: '8oz Wagyu patty, aged cheddar, caramelized onions, truffle aioli on brioche.', price: 28, category: 'Main Course', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm3', companyId: 'luxestay', name: 'Wild Mushroom Risotto', description: 'Arborio rice, seasonal forest mushrooms, parmesan reggiano, truffle oil.', price: 24, category: 'Main Course', image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm4', companyId: 'luxestay', name: 'Dark Chocolate Lava Cake', description: 'Warm center, vanilla bean gelato, raspberry coulis.', price: 14, category: 'Desserts', image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm5', companyId: 'luxestay', name: 'Signature Old Fashioned', description: 'Premium bourbon, bitters, orange zest, hand-cut ice.', price: 16, category: 'Drinks', image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm6', companyId: 'luxestay', name: 'Fresh Seasonal Fruit Platter', description: 'Slices of melon, berries, grapes, and exotic tropical fruits.', price: 15, category: 'Breakfast', image: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&q=80&w=400', available: true },
-  { id: 'm7', companyId: 'luxestay', name: 'Artisanal Cheese Board', description: 'Selection of 3 local cheeses, honey, nuts, and crackers.', price: 22, category: 'Snacks', image: 'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm1', companyId: 'stayos', name: 'Classic Eggs Benedict', description: 'Two poached eggs, Canadian bacon, hollandaise sauce on toasted English muffins.', price: 18, category: 'Breakfast', image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm2', companyId: 'stayos', name: 'Wagyu Beef Burger', description: '8oz Wagyu patty, aged cheddar, caramelized onions, truffle aioli on brioche.', price: 28, category: 'Main Course', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm3', companyId: 'stayos', name: 'Wild Mushroom Risotto', description: 'Arborio rice, seasonal forest mushrooms, parmesan reggiano, truffle oil.', price: 24, category: 'Main Course', image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm4', companyId: 'stayos', name: 'Dark Chocolate Lava Cake', description: 'Warm center, vanilla bean gelato, raspberry coulis.', price: 14, category: 'Desserts', image: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm5', companyId: 'stayos', name: 'Signature Old Fashioned', description: 'Premium bourbon, bitters, orange zest, hand-cut ice.', price: 16, category: 'Drinks', image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm6', companyId: 'stayos', name: 'Fresh Seasonal Fruit Platter', description: 'Slices of melon, berries, grapes, and exotic tropical fruits.', price: 15, category: 'Breakfast', image: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?auto=format&fit=crop&q=80&w=400', available: true },
+  { id: 'm7', companyId: 'stayos', name: 'Artisanal Cheese Board', description: 'Selection of 3 local cheeses, honey, nuts, and crackers.', price: 22, category: 'Snacks', image: 'https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?auto=format&fit=crop&q=80&w=400', available: true },
 ];
 
 // Hashed passwords for demo accounts (password: "SecurePass123!")
@@ -100,9 +118,9 @@ const DEMO_PASSWORD_HASH = 'efe5e46562838eb6afd1cb753f27a7616bf474188899dc69e0e7
 export const INITIAL_STAFF: StaffMember[] = [
   {
     id: 's1',
-    companyId: 'luxestay',
+    companyId: 'stayos',
     name: 'Maria Garcia',
-    email: 'maria@luxestay.com',
+    email: 'maria@stayos.com',
     password: DEMO_PASSWORD_HASH,
     role: 'Head Housekeeper',
     department: 'Housekeeping',
@@ -117,9 +135,9 @@ export const INITIAL_STAFF: StaffMember[] = [
   },
   {
     id: 's2',
-    companyId: 'luxestay',
+    companyId: 'stayos',
     name: 'Dave Miller',
-    email: 'dave@luxestay.com',
+    email: 'dave@stayos.com',
     password: DEMO_PASSWORD_HASH,
     role: 'Senior Technician',
     department: 'Maintenance',
@@ -133,9 +151,9 @@ export const INITIAL_STAFF: StaffMember[] = [
   },
   {
     id: 's3',
-    companyId: 'luxestay',
+    companyId: 'stayos',
     name: 'Sarah Chen',
-    email: 'sarah@luxestay.com',
+    email: 'sarah@stayos.com',
     password: DEMO_PASSWORD_HASH,
     role: 'Receptionist',
     department: 'Front Desk',
@@ -150,9 +168,9 @@ export const INITIAL_STAFF: StaffMember[] = [
   },
   {
     id: 's4',
-    companyId: 'luxestay',
+    companyId: 'stayos',
     name: 'James Wilson',
-    email: 'james@luxestay.com',
+    email: 'james@stayos.com',
     password: DEMO_PASSWORD_HASH,
     role: 'Concierge',
     department: 'Concierge',
@@ -166,16 +184,16 @@ export const INITIAL_STAFF: StaffMember[] = [
   },
   {
     id: 's5',
-    companyId: 'luxestay',
-    name: 'Elena Rodriguez',
-    email: 'manager@luxestay.com',
+    companyId: 'stayos',
+    name: 'Agyiri Sakyi',
+    email: 'agyirisakyi@stayos.com',
     password: DEMO_PASSWORD_HASH,
     role: 'General Manager',
     department: 'Management',
     permissionRole: UserRole.ADMIN,
     status: StaffStatus.AVAILABLE,
     avatar: 'https://picsum.photos/seed/s5/100',
-    phone: '555-0105',
+    phone: '0208211356',
     accessKeys: [
       { id: 'ak7', key: 'admin_ghi789jkl012', createdAt: '2024-01-01T00:00:00Z', lastUsed: '2024-05-21T09:30:00Z', description: 'Full Admin Access', active: true },
       { id: 'ak8', key: 'admin_mno345pqr678', createdAt: '2024-03-15T10:00:00Z', description: 'Emergency Access', active: true },
@@ -186,7 +204,7 @@ export const INITIAL_STAFF: StaffMember[] = [
         id: 'rc1',
         service: 'firebase' as any,
         apiKey: 'AIzaSyC_dX5748d3xPWb-eRVJxmllcGrechODPM',
-        createdAt: '2024-01-01T00:00:00Z',
+        createdAt: '2026-01-01T00:00:00Z',
         description: 'Firebase Production API Key',
         active: true,
         encrypted: false
@@ -211,37 +229,37 @@ export const INITIAL_CATEGORIES: RoomCategory[] = [
 ];
 
 export const INITIAL_ROOMS: Room[] = [
-  { id: '1', companyId: 'luxestay', number: '101', categoryId: 'cat1', status: RoomStatus.AVAILABLE, floor: 1, maintenanceHistory: [] },
-  { id: '2', companyId: 'luxestay', number: '102', categoryId: 'cat1', status: RoomStatus.OCCUPIED, floor: 1, maintenanceHistory: [] },
-  { id: '3', companyId: 'luxestay', number: '103', categoryId: 'cat2', status: RoomStatus.CLEANING, floor: 1, maintenanceHistory: [] },
-  { id: '4', companyId: 'luxestay', number: '201', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
-  { id: '5', companyId: 'luxestay', number: '202', categoryId: 'cat3', status: RoomStatus.MAINTENANCE, floor: 2, maintenanceHistory: [] },
-  { id: '6', companyId: 'luxestay', number: '301', categoryId: 'cat3', status: RoomStatus.OCCUPIED, floor: 3, maintenanceHistory: [] },
-  { id: '7', companyId: 'luxestay', number: '104', categoryId: 'cat2', status: RoomStatus.AVAILABLE, floor: 1, maintenanceHistory: [] },
-  { id: '8', companyId: 'luxestay', number: '203', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
-  { id: '9', companyId: 'luxestay', number: '204', categoryId: 'cat2', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
-  { id: '10', companyId: 'luxestay', number: '302', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 3, maintenanceHistory: [] },
+  { id: '1', companyId: 'stayos', number: '101', categoryId: 'cat1', status: RoomStatus.AVAILABLE, floor: 1, maintenanceHistory: [] },
+  { id: '2', companyId: 'stayos', number: '102', categoryId: 'cat1', status: RoomStatus.OCCUPIED, floor: 1, maintenanceHistory: [] },
+  { id: '3', companyId: 'stayos', number: '103', categoryId: 'cat2', status: RoomStatus.CLEANING, floor: 1, maintenanceHistory: [] },
+  { id: '4', companyId: 'stayos', number: '201', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
+  { id: '5', companyId: 'stayos', number: '202', categoryId: 'cat3', status: RoomStatus.MAINTENANCE, floor: 2, maintenanceHistory: [] },
+  { id: '6', companyId: 'stayos', number: '301', categoryId: 'cat3', status: RoomStatus.OCCUPIED, floor: 3, maintenanceHistory: [] },
+  { id: '7', companyId: 'stayos', number: '104', categoryId: 'cat2', status: RoomStatus.AVAILABLE, floor: 1, maintenanceHistory: [] },
+  { id: '8', companyId: 'stayos', number: '203', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
+  { id: '9', companyId: 'stayos', number: '204', categoryId: 'cat2', status: RoomStatus.AVAILABLE, floor: 2, maintenanceHistory: [] },
+  { id: '10', companyId: 'stayos', number: '302', categoryId: 'cat3', status: RoomStatus.AVAILABLE, floor: 3, maintenanceHistory: [] },
 ];
 
 export const INITIAL_GUESTS: Guest[] = [
-  { id: 'g1', companyId: 'luxestay', name: 'John Doe', email: 'john@example.com', phone: '+123456789', location: 'New York, USA', documentId: 'PASS123', nationality: 'USA', ageGroup: '36-50' },
-  { id: 'g2', companyId: 'luxestay', name: 'Jane Smith', email: 'jane@example.com', phone: '+987654321', location: 'London, UK', documentId: 'ID987', nationality: 'UK', ageGroup: '26-35' },
-  { id: 'g3', companyId: 'luxestay', name: 'Hans Mueller', email: 'hans@example.com', phone: '+49123456', location: 'Berlin, Germany', documentId: 'DE444', nationality: 'Germany', ageGroup: '50+' },
-  { id: 'g4', companyId: 'luxestay', name: 'Yuki Tanaka', email: 'yuki@example.com', phone: '+81999888', location: 'Tokyo, Japan', documentId: 'JP555', nationality: 'Japan', ageGroup: '26-35' },
+  { id: 'g1', companyId: 'stayos', name: 'John Doe', email: 'john@example.com', phone: '+123456789', location: 'New York, USA', documentId: 'PASS123', nationality: 'USA', ageGroup: '36-50' },
+  { id: 'g2', companyId: 'stayos', name: 'Jane Smith', email: 'jane@example.com', phone: '+987654321', location: 'London, UK', documentId: 'ID987', nationality: 'UK', ageGroup: '26-35' },
+  { id: 'g3', companyId: 'stayos', name: 'Hans Mueller', email: 'hans@example.com', phone: '+49123456', location: 'Berlin, Germany', documentId: 'DE444', nationality: 'Germany', ageGroup: '50+' },
+  { id: 'g4', companyId: 'stayos', name: 'Yuki Tanaka', email: 'yuki@example.com', phone: '+81999888', location: 'Tokyo, Japan', documentId: 'JP555', nationality: 'Japan', ageGroup: '26-35' },
 ];
 
 export const INITIAL_BOOKINGS: Booking[] = [
-  { id: 'b1', roomId: '2', guestId: 'g1', checkIn: '2024-05-20', checkOut: '2024-05-25', totalPrice: 400, status: 'checked-in', guestsCount: 1, source: 'Direct' },
-  { id: 'b2', roomId: '6', guestId: 'g2', checkIn: '2024-05-21', checkOut: '2024-05-28', totalPrice: 5950, status: 'checked-in', guestsCount: 2, source: 'Booking.com' },
-  { id: 'b3', roomId: '1', guestId: 'g3', checkIn: '2024-05-10', checkOut: '2024-05-15', totalPrice: 400, status: 'checked-out', guestsCount: 1, source: 'Expedia' },
-  { id: 'b4', roomId: '4', guestId: 'g4', checkIn: '2024-06-01', checkOut: '2024-06-05', totalPrice: 1000, status: 'confirmed', guestsCount: 2, source: 'Airbnb' },
-  { id: 'b5', roomId: '7', guestId: 'g1', checkIn: '2024-05-25', checkOut: '2024-05-30', totalPrice: 600, status: 'confirmed', guestsCount: 2, source: 'Direct' },
+  { id: 'b1', companyId: 'stayos', roomId: '2', guestId: 'g1', checkIn: '2024-05-20', checkOut: '2024-05-25', totalPrice: 400, status: 'checked-in', guestsCount: 1, source: 'Direct' },
+  { id: 'b2', companyId: 'stayos', roomId: '6', guestId: 'g2', checkIn: '2024-05-21', checkOut: '2024-05-28', totalPrice: 5950, status: 'checked-in', guestsCount: 2, source: 'Booking.com' },
+  { id: 'b3', companyId: 'stayos', roomId: '1', guestId: 'g3', checkIn: '2024-05-10', checkOut: '2024-05-15', totalPrice: 400, status: 'checked-out', guestsCount: 1, source: 'Expedia' },
+  { id: 'b4', companyId: 'stayos', roomId: '4', guestId: 'g4', checkIn: '2024-06-01', checkOut: '2024-06-05', totalPrice: 1000, status: 'confirmed', guestsCount: 2, source: 'Airbnb' },
+  { id: 'b5', companyId: 'stayos', roomId: '7', guestId: 'g1', checkIn: '2024-05-25', checkOut: '2024-05-30', totalPrice: 600, status: 'confirmed', guestsCount: 2, source: 'Direct' },
 ];
 
 export const INITIAL_TASKS: Task[] = [
   {
     id: 't1',
-    companyId: 'luxestay',
+    companyId: 'stayos',
     title: 'Deep cleaning Room 103',
     description: 'Full sanitized cleaning after check-out. Replace all linens and replenish mini-bar.',
     type: TaskType.CLEANING,
@@ -253,7 +271,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 't2',
-    companyId: 'luxestay',
+    companyId: 'stayos',
     title: 'Fix AC in Room 202',
     description: 'Guest reported noise from the air conditioning unit during night time.',
     type: TaskType.MAINTENANCE,
@@ -265,7 +283,7 @@ export const INITIAL_TASKS: Task[] = [
   },
   {
     id: 't3',
-    companyId: 'luxestay',
+    companyId: 'stayos',
     title: 'Welcome Kit Delivery',
     description: 'Deliver premium VIP welcome fruit basket and champagne to Presidential Villa.',
     type: TaskType.SERVICE,

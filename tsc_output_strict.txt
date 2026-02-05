@@ -1,0 +1,15 @@
+App.tsx(426,13): error TS2322: Type 'StaffMember | null' is not assignable to type 'StaffMember'.
+  Type 'null' is not assignable to type 'StaffMember'.
+App.tsx(523,13): error TS2322: Type 'StaffMember | null' is not assignable to type 'StaffMember'.
+  Type 'null' is not assignable to type 'StaffMember'.
+components/AnalyticsDashboard.tsx(200,115): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: Props, context?: any): string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<...> | Promise<...> | Component<...> | null | undefined', gave the following error.
+    Type '(v: number) => string' is not assignable to type 'LabelFormatter'.
+      Types of parameters 'v' and 'label' are incompatible.
+        Type 'RenderableText' is not assignable to type 'number'.
+          Type 'undefined' is not assignable to type 'number'.
+  Overload 2 of 2, '(props: Props): string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<...> | Component<...> | null | undefined', gave the following error.
+    Type '(v: number) => string' is not assignable to type 'LabelFormatter'.
+      Types of parameters 'v' and 'label' are incompatible.
+        Type 'RenderableText' is not assignable to type 'number'.
+          Type 'undefined' is not assignable to type 'number'.

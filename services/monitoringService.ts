@@ -2,9 +2,17 @@ import * as Sentry from "@sentry/react";
 import posthog from 'posthog-js';
 
 // Configuration placeholders - in a real app these would be in .env
-const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN || "";
-const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY || "";
-const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || "https://app.posthog.com";
+const getEnv = (key: string): string => {
+    try {
+        return (import.meta as any).env[key] || "";
+    } catch {
+        return "";
+    }
+};
+
+const SENTRY_DSN = getEnv("VITE_SENTRY_DSN");
+const POSTHOG_KEY = getEnv("VITE_POSTHOG_KEY");
+const POSTHOG_HOST = getEnv("VITE_POSTHOG_HOST") || "https://app.posthog.com";
 
 export const initMonitoring = () => {
     // Initialize Sentry
@@ -20,7 +28,7 @@ export const initMonitoring = () => {
             // Session Replay
             replaysSessionSampleRate: 0.1,
             replaysOnErrorSampleRate: 1.0,
-            environment: import.meta.env.MODE,
+            environment: getEnv("MODE"),
         });
     }
 
