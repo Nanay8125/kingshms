@@ -37,6 +37,7 @@ const CategoryManagement: React.FC<CategoryManagementProps> = ({ categories, onU
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [mainImagePreview, setMainImagePreview] = useState<string>('');
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
 
   const filteredCategories = categories.filter(cat => {
     const sanitizedQuery = sanitizeSearchQuery(searchQuery).toLowerCase();
@@ -56,6 +57,7 @@ const CategoryManagement: React.FC<CategoryManagementProps> = ({ categories, onU
     setMainImageFile(null);
     setGalleryFiles([]);
     setMainImagePreview('');
+    setGalleryPreviews([]);
   };
 
   const openEditModal = (category: RoomCategory) => {
@@ -71,6 +73,7 @@ const CategoryManagement: React.FC<CategoryManagementProps> = ({ categories, onU
     setMainImagePreview(category.imageUrl || '');
     setMainImageFile(null);
     setGalleryFiles([]);
+    setGalleryPreviews([]);
     setIsModalOpen(true);
   };
 
