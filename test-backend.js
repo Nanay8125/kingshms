@@ -555,7 +555,9 @@ console.log('\n⏳ Running back-end tests...\n');
 backendTests.runAllTests();
 
 // Export for manual use
-window.backendTests = backendTests;
+if (typeof window !== 'undefined') {
+    window.backendTests = backendTests;
+}
 
 console.log('\n💡 Manual Testing Commands:');
 console.log('backendTests.runAllTests() - Run all tests again');

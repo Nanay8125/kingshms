@@ -37,8 +37,6 @@ jobs:
   backend:
     name: Backend Build & Deploy
     runs-on: ubuntu-latest
-    env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -64,6 +62,10 @@ jobs:
         run: |
           cd functions
           npm run build
+
+      - name: Setup Railway Token
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: echo "RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }}" >> $GITHUB_ENV
 
       - name: Deploy to Railway
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
