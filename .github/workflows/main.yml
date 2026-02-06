@@ -27,7 +27,7 @@ jobs:
 
       - name: Deploy to Vercel
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: amondnet/vercel-action@v25
+        uses: amondnet/vercel-action@v20
         with:
           vercel-token: gOI0ailiMk69RirOwE7GRoPn
           vercel-org-id: team_JSFWu8DGnKfBoWgOQckSxJtW
